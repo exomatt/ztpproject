@@ -24,8 +24,15 @@ public class Client {
         System.out.println(databaseEditorAdapter.getWord("cherry"));
         List<Word> pl = databaseEditorAdapter.findByLanguage("pl");
         pl.forEach(System.out::println);
-//        databaseEditorAdapter.addWord(word);
+//        databaseEditorAdapter.addWord(word1);
         DatabaseEditorAdapter databaseEditorAdapter1 = new FileDatabase();
-        databaseEditorAdapter1.addWord(word1);
+//        databaseEditorAdapter1.addWord(word1);
+        System.out.println("test all:");
+        List<Word> allWords = databaseEditorAdapter1.getAllWords();
+        allWords.forEach(System.out::println);
+        System.out.println("test pl:");
+        List<Word> pl1 = databaseEditorAdapter1.findByLanguage("pl");
+        pl1.forEach(System.out::println);
+//        databaseEditorAdapter1.deleteWord(word1);
     }
 }

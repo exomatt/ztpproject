@@ -24,7 +24,8 @@ public class Word {
     public String toString() {
         return "Word{" +
                 "word='" + word + '\'' +
-                ", translation=" + translation.getWord() +
+                ", translation=" + translation.getWord()
+                +
                 ", language='" + language + '\'' +
                 '}';
     }

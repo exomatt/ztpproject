@@ -4,14 +4,17 @@ import lombok.extern.java.Log;
 import model.Word;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import java.util.Arrays;
 import java.util.List;
 
 @Log
 public class DatabaseRepository implements DatabaseEditorAdapter {
     public void addWord(Word word) {
         EntityManager entityManager = ConnectionSingleton.getEntityManagerFactory().createEntityManager();
-        if (!entityManager.contains(word)) {
+        log.info("In addWord function in DatabaseRepository");
+        if (entityManager.contains(word)) {
             log.info("Object alredy exists in DB: " + word.toString());
             return;
         }
@@ -50,7 +53,12 @@ public class DatabaseRepository implements DatabaseEditorAdapter {
         EntityManager entityManager = ConnectionSingleton.getEntityManagerFactory().createEntityManager();
         Query query = entityManager.createQuery("select c from Word  c where c.word= ?1", Word.class);
         query.setParameter(1, word);
-        Word firstResult = (Word) query.getSingleResult();
+        Word firstResult = null;
+        try {
+            firstResult = (Word) query.getSingleResult();
+        } catch (NoResultException e) {
+            log.severe("No result" + e.getMessage() + Arrays.toString(e.getStackTrace()));
+        }
         return firstResult;
     }
 

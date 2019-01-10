@@ -11,6 +11,8 @@ import java.util.List;
 
 public class Client {
     public static void main(String[] args) {
+        //todo opisac biblioteke zewnetrzna swing, lombok
+
         Word word = new Word("wiśnia", null, "pl");
         Word word1 = new Word("cherry", word, "eng");
         word.setTranslation(word1);
@@ -33,6 +35,14 @@ public class Client {
         System.out.println("test pl:");
         List<Word> pl1 = databaseEditorAdapter1.findByLanguage("pl");
         pl1.forEach(System.out::println);
+
+        Word wiśnia = databaseEditorAdapter1.getWord("wiśnia");
+        System.out.println("tesowe pojedyncze: " + wiśnia.toString());
+
+        Word czeresnia = databaseEditorAdapter1.getWord("czeresnia");
+        if (czeresnia == null) {
+            System.out.println("nie ma xd s");
+        }
 //        databaseEditorAdapter1.deleteWord(word1);
     }
 }

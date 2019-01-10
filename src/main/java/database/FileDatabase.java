@@ -98,6 +98,17 @@ public class FileDatabase implements DatabaseEditorAdapter {
     }
 
     public Word getWord(String word) {
+        List<Word> allWords = getAllWords();
+        if (allWords.isEmpty()) {
+            log.info("Empty list !! :( ");
+            return null;
+        }
+        for (Word allWord : allWords) {
+            if (allWord.getWord().equals(word)) {
+                return allWord;
+            }
+        }
+        log.info("Not found that word in DB:" + word);
         return null;
     }
 

@@ -16,11 +16,16 @@ public class Client {
         Word word = new Word("wiśnia", null, "pl");
         Word word1 = new Word("cherry", word, "eng");
         word.setTranslation(word1);
+        Word word2 = new Word("pomarańcza", null, "pl");
+        Word toChange = new Word("cherry", word2, "eng");
+        word2.setTranslation(toChange);
+
+
         EntityManager entityManager = ConnectionSingleton.getEntityManagerFactory().createEntityManager();
         Query query = entityManager.createQuery("select c from Word  c", Word.class);
         List<Word> resultList = query.getResultList();
-        for (Word word2 : resultList) {
-            System.out.println(word2.toString());
+        for (Word word22 : resultList) {
+            System.out.println(word22.toString());
         }
         DatabaseEditorAdapter databaseEditorAdapter = new DatabaseRepository();
         System.out.println(databaseEditorAdapter.getWord("cherry"));
@@ -28,22 +33,25 @@ public class Client {
         pl.forEach(System.out::println);
         System.out.println("halko to tu " + entityManager.contains(word1));
         databaseEditorAdapter.addWord(word1);
-        DatabaseEditorAdapter databaseEditorAdapter1 = new FileDatabase();
-//        databaseEditorAdapter1.addWord(word1);
+        DatabaseEditorAdapter databaseFile = new FileDatabase();
+//        databaseFile.addWord(word1);
         System.out.println("test all:");
-        List<Word> allWords = databaseEditorAdapter1.getAllWords();
+        List<Word> allWords = databaseFile.getAllWords();
         allWords.forEach(System.out::println);
         System.out.println("test pl:");
-        List<Word> pl1 = databaseEditorAdapter1.findByLanguage("pl");
+        List<Word> pl1 = databaseFile.findByLanguage("pl");
         pl1.forEach(System.out::println);
 
-        Word wiśnia = databaseEditorAdapter1.getWord("wiśnia");
+        Word wiśnia = databaseFile.getWord("wiśnia");
         System.out.println("tesowe pojedyncze: " + wiśnia.toString());
 
-        Word czeresnia = databaseEditorAdapter1.getWord("czeresnia");
+        Word czeresnia = databaseFile.getWord("czeresnia");
         if (czeresnia == null) {
             System.out.println("nie ma xd s");
         }
-//        databaseEditorAdapter1.deleteWord(word1);
+        databaseFile.changeWorldTranslation(toChange);
+        Word cheryy = databaseFile.getWord("cherry");
+        System.out.println(cheryy.toString());
+//        databaseFile.deleteWord(word1);
     }
 }

@@ -113,6 +113,13 @@ public class FileDatabase implements DatabaseEditorAdapter {
     }
 
     public void changeWorldTranslation(Word word) {
-
+        Word wordFromDB = getWord(word.getWord());
+        if (wordFromDB == null) {
+            log.info("Word non found in db");
+            return;
+        }
+        deleteWord(wordFromDB);
+        addWord(word);
+        log.info("Update word: " + wordFromDB.toString() + "->" + word.toString());
     }
 }

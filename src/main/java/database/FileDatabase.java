@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,7 +63,7 @@ public class FileDatabase implements DatabaseEditorAdapter {
         List<Word> allWords = getAllWords();
         if (allWords.isEmpty()) {
             log.info("Empty list !! :( ");
-            return Collections.emptyList();
+            return null;
         }
 
         return allWords.stream().filter(p -> p.getLanguage().equals(language)).collect(Collectors.toList());
@@ -76,7 +75,7 @@ public class FileDatabase implements DatabaseEditorAdapter {
             List<String> wordList = Files.readAllLines(Paths.get(filePath));
             if (wordList.isEmpty()) {
                 log.info("List is emvpty ");
-                return Collections.emptyList();
+                return null;
             }
             for (String wordInList : wordList) {
                 String[] split = wordInList.split(",");

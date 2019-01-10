@@ -14,7 +14,7 @@ public class DatabaseRepository implements DatabaseEditorAdapter {
     public void addWord(Word word) {
         EntityManager entityManager = ConnectionSingleton.getEntityManagerFactory().createEntityManager();
         log.info("In addWord function in DatabaseRepository");
-        if (entityManager.contains(word)) {
+        if (checkIfInDB(word)) {
             log.info("Object alredy exists in DB: " + word.toString());
             return;
         }
@@ -68,6 +68,16 @@ public class DatabaseRepository implements DatabaseEditorAdapter {
         entityManager.merge(word);
         entityManager.getTransaction().commit();
         entityManager.close();
+    }
+
+    private boolean checkIfInDB(Word word) {
+        List<Word> allWords = getAllWords();
+        for (Word allWord : allWords) {
+            if (allWord.getWord().equals(word.getWord())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

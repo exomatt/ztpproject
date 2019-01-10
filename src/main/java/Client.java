@@ -26,7 +26,8 @@ public class Client {
         System.out.println(databaseEditorAdapter.getWord("cherry"));
         List<Word> pl = databaseEditorAdapter.findByLanguage("pl");
         pl.forEach(System.out::println);
-//        databaseEditorAdapter.addWord(word1);
+        System.out.println("halko to tu " + entityManager.contains(word1));
+        databaseEditorAdapter.addWord(word1);
         DatabaseEditorAdapter databaseEditorAdapter1 = new FileDatabase();
 //        databaseEditorAdapter1.addWord(word1);
         System.out.println("test all:");

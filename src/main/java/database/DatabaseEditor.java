@@ -11,27 +11,27 @@ import java.util.List;
 public class DatabaseEditor {
     private DatabaseEditorAdapter database;
 
-    void addWord(Word word) {
+    public void addWord(Word word) {
         database.addWord(word);
     }
 
-    void deleteWord(Word word) {
+    public void deleteWord(Word word) {
         database.deleteWord(word);
     }
 
-    List<Word> findByLanguage(String language) {
+    public List<Word> findByLanguage(String language) {
         return database.findByLanguage(language);
     }
 
-    List<Word> getAllWords() {
+    public List<Word> getAllWords() {
         return database.getAllWords();
     }
 
-    Word getWord(String word) {
+    public Word getWord(String word) {
         return database.getWord(word);
     }
 
-    void changeWorldTranslation(Word word) {
+    public void changeWorldTranslation(Word word) {
         database.changeWorldTranslation(word);
     }
 }

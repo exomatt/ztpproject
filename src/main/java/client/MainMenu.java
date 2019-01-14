@@ -124,7 +124,8 @@ public class MainMenu {
         editorDB = new DatabaseEditor();
         editorDB.setDatabase(new FileDatabase());
         List<Word> words = editorDB.getAllWords();
-        //todo zrobienie wyboru jezyka
+        //todo zrobienie wyboru jezyka combox do editbase
+        
         if (words == null) {
             JOptionPane.showMessageDialog(mainframe, "Problem with database file", "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -166,7 +167,6 @@ public class MainMenu {
                 languageField.setText(current.getLanguage());
                 wordField.setEditable(true);
                 translationField.setEditable(true);
-                languageField.setEditable(true);
             }
         });
 

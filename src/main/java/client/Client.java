@@ -14,7 +14,7 @@ public class Client {
             }
         });
 
-
+//
 //        Word word = new Word("wisnia", null, "pl");
 //        Word word1 = new Word("cherry", word, "eng");
 //        word.setTranslation(word1);

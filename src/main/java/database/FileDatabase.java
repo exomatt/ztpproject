@@ -92,6 +92,7 @@ public class FileDatabase implements DatabaseEditorAdapter {
             }
         } catch (IOException e) {
             log.severe("Problem with DB file:" + e.toString());
+            return null;
         }
         return result;
     }

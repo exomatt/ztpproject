@@ -7,7 +7,12 @@ import java.util.List;
 
 public class PolishForeignState extends LanguageState {
     @Override
-    List<Word> getWordList(DatabaseEditor databaseEditor) {
-        return databaseEditor.findByLanguage("pl");
+    public String getLanguage() {
+        return "pl";
+    }
+
+    @Override
+    public List<Word> getWordList(DatabaseEditor databaseEditor) {
+        return databaseEditor.findByLanguage("eng");
     }
 }

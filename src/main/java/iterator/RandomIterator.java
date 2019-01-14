@@ -2,12 +2,13 @@ package iterator;
 
 import model.Word;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
 public class RandomIterator implements Iterator<Word> {
-    List<Word> wordList;
+    List<Word> wordList = new ArrayList<>();
     int position;
 
     public RandomIterator(List<Word> listFromDB, int number) {

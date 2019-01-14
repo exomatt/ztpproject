@@ -1,6 +1,13 @@
 package client;
 
+import database.DatabaseEditor;
+import database.FileDatabase;
+import game.LearningGame;
 import model.Word;
+import state.ForeignPolishState;
+import state.LanguageState;
+import state.PolishForeignState;
+import strategy.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,8 +16,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class MainMenu {
+    private DatabaseEditor editorDB;
     private static final int LEARN = 0;
     private static final int TEST = 1;
     private static final int POLENG = 2;
@@ -110,12 +120,15 @@ public class MainMenu {
         frame.setPreferredSize(new Dimension(400, 400));
         frame.setLayout(new GridLayout(1, 2));
 
-        Word word = new Word("wisnia", null, "pl");
-        Word word1 = new Word("cherry", word, "eng");
-        word.setTranslation(word1);
-        ArrayList<Word> words = new ArrayList<>();
-        words.add(word);
-        words.add(word1);
+
+        editorDB = new DatabaseEditor();
+        editorDB.setDatabase(new FileDatabase());
+        List<Word> words = editorDB.getAllWords();
+        //todo zrobienie wyboru jezyka
+        if (words == null) {
+            JOptionPane.showMessageDialog(mainframe, "Problem with database file", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         CustomListModel model = new CustomListModel(words);
         JList list = new JList(model);
         frame.add(list);
@@ -165,8 +178,10 @@ public class MainMenu {
     }
 
     private void createGameWindow(int gameType, int langState, String diff) {
-//        LearningGame game = new LearningGame();
-//        Difficulty difficulty;
+        // todo wybór skąd ma brac słowa z pliku czy z bazy
+        editorDB = new DatabaseEditor();
+        editorDB.setDatabase(new FileDatabase());
+        LearningGame game = new LearningGame();
 //        LanguageState languageState;
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -179,25 +194,25 @@ public class MainMenu {
         ArrayList<JComponent> componentList = new ArrayList<>();
         switch (diff) {
             case "2 words":
-//                difficulty = new TwoWordDifficulty();
+                game.setGameDifficulty(new TwoWordDifficulty());
                 componentList.add(new JButton("1"));
                 componentList.add(new JButton("2"));
                 break;
             case "3 words":
-//                difficulty = new ThreeWordDifficulty();
+                game.setGameDifficulty(new ThreeWordDifficulty());
                 componentList.add(new JButton("1"));
                 componentList.add(new JButton("2"));
                 componentList.add(new JButton("3"));
                 break;
             case "4 words":
-//                difficulty = new FourWordDifficulty();
+                game.setGameDifficulty(new FourWordDifficulty());
                 componentList.add(new JButton("1"));
                 componentList.add(new JButton("2"));
                 componentList.add(new JButton("3"));
                 componentList.add(new JButton("4"));
                 break;
             case "5 words":
-//                difficulty = new FiveWordDifficulty();
+                game.setGameDifficulty(new FiveWordDifficulty());
                 componentList.add(new JButton("1"));
                 componentList.add(new JButton("2"));
                 componentList.add(new JButton("3"));
@@ -205,25 +220,38 @@ public class MainMenu {
                 componentList.add(new JButton("5"));
                 break;
             case "Write words":
-//                difficulty = new WrittenWordDifficulty();
+                game.setGameDifficulty(new WrittenWordDifficulty());
                 componentList.add(new JTextField());
                 break;
             default:
-//                difficulty = new TwoWordDifficulty();
+                game.setGameDifficulty(new TwoWordDifficulty());
         }
-//        if (langState == 2) {
-//            languageState = new ForeignPolishState();
-//        } else {
-//            languageState = new PolishForeignState();
-//        }
-//        game.setGameDifficulty(difficulty);
-
-//        game.setLanguageState(languageState);
-
+        LanguageState languageState;
+        if (langState == 2) {
+            languageState = new PolishForeignState();
+        } else {
+            languageState = new ForeignPolishState();
+        }
+        game.setLanguageState(languageState);
+        game.setQuestions(editorDB.findByLanguage(languageState.getLanguage()));
+        // todo dopisac wybor iteraatora alfabetyczny / losowy -> tymczasowo alphabet
+        game.createIterator(false, 1);
+        Iterator<Word> iterator = game.getIterator();
         JLabel wordToTranslate = new JLabel("Word to translate");
         gamePanel.setLayout(new FlowLayout());
         gamePanel.add(wordToTranslate);
 
+        while (iterator.hasNext()) {
+            componentList.clear();
+            Word word = iterator.next();
+            wordToTranslate.setText("Word to translate:  " + word.getWord());
+            List<Word> answerWords = game.getGameDifficulty().getAnswerWords(word, editorDB, game.getLanguageState());
+            for (Word answerWord : answerWords) {
+                componentList.add(new JButton(answerWord.getWord()));
+            }
+            //todo musi sie zatrzymac
+
+        }
         bottomPanel.setLayout(new GridLayout());
         for (JComponent component : componentList) {
             bottomPanel.add(component);
@@ -233,6 +261,7 @@ public class MainMenu {
         frame.add(bottomPanel, BorderLayout.PAGE_END);
         frame.pack();
         frame.setVisible(true);
+
     }
 
 }

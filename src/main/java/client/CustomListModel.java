@@ -4,16 +4,17 @@ import model.Word;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CustomListModel extends AbstractListModel {
 
-    private ArrayList<Word> arrayList;
+    private List<Word> arrayList;
 
     public CustomListModel() {
         this.arrayList = new ArrayList<>();
     }
 
-    public CustomListModel(ArrayList<Word> arrayList) {
+    public CustomListModel(List<Word> arrayList) {
         this.arrayList = arrayList;
     }
 

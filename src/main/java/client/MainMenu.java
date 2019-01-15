@@ -242,17 +242,7 @@ public class MainMenu {
         });
         removeWordButton.setEnabled(false);
         removeWordButton.addActionListener(e -> {
-            String temp = (String) list.getSelectedValue();
-            Word current = null;
-            for (Word w : words) {
-                if (w.getWord().equals(temp)) {
-                    current = w;
-                    break;
-                }
-            }
-            if (current == null) {
-                return;
-            }
+            Word current = getCurrentWord(words, list);
             editorDB.deleteWord(current);
             words.remove(current);
             list.setModel(new CustomListModel(words));
@@ -286,13 +276,16 @@ public class MainMenu {
             wordField.setText(current.getWord());
             translationField.setText(current.getTranslation().getWord());
         }
-        final JComponent[] inputs = new JComponent[]{
-                new JLabel("Your word"),
-                wordField,
-                new JLabel("Translation"),
-                translationField
-        };
-        int result = JOptionPane.showConfirmDialog(null, inputs, "New word", JOptionPane.OK_CANCEL_OPTION);
+        List<JComponent> inputs = new ArrayList<>();
+        inputs.add(new JLabel("Your word"));
+        inputs.add(wordField);
+        inputs.add(new JLabel("Translation"));
+        inputs.add(translationField);
+        if (current == null) {
+            inputs.add(new JLabel("Word language"));
+            inputs.add(new JComboBox<>(new String[]{"pl", "eng"}));
+        }
+        int result = JOptionPane.showConfirmDialog(null, inputs.toArray(), "New word", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
             //TODO Jak nacisniesz ok to dodajesz slowo
             if (wordField.getText().replace(" ", "").isEmpty() || translationField.getText().replace(" ", "").isEmpty()) {

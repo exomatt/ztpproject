@@ -35,6 +35,10 @@ public class MainMenu {
     private JButton startButton = new JButton("Start");
     private JButton editButton = new JButton("Edit your words");
     private JButton continueButton = new JButton("Continue");
+    private CustomListModel model;
+    private JList list;
+    private List<Word> words;
+    private JComboBox<String> languageComboBox;
 
     /**
      * Instantiates a new Main menu.
@@ -160,16 +164,16 @@ public class MainMenu {
             editorDB.setDatabase(new FileDatabase());
         }
 
-        List<Word> words = editorDB.findByLanguage("pl");
+        words = editorDB.findByLanguage("pl");
 
         if (words == null) {
             JOptionPane.showMessageDialog(mainframe, "Problem with database file", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        CustomListModel model = new CustomListModel(words);
-        JList list = new JList(model);
+        model = new CustomListModel(words);
+        list = new JList(model);
 
-        JComboBox<String> languageComboBox = new JComboBox<>(new String[]{"Polish", "English"});
+        languageComboBox = new JComboBox<>(new String[]{"Polish", "English"});
         languageComboBox.addItemListener(e -> {
             if (languageComboBox.getSelectedItem().toString().equals("Polish")) {
                 List<Word> plWords = editorDB.findByLanguage("pl");
@@ -183,7 +187,7 @@ public class MainMenu {
         gc.gridwidth = 3;
         gc.gridx = 0;
         gc.gridy = 0;
-        frame.add(languageComboBox,gc);
+        frame.add(languageComboBox, gc);
 
         gc.gridwidth = 1;
         gc.weighty = 1;
@@ -265,7 +269,7 @@ public class MainMenu {
         frame.add(buttonsPanel, gc);
 
         gc.gridx = 2;
-        frame.add(wordDetail,gc);
+        frame.add(wordDetail, gc);
 
         frame.pack();
         frame.setVisible(true);
@@ -288,9 +292,30 @@ public class MainMenu {
                 new JLabel("Translation"),
                 translationField
         };
-        int result = JOptionPane.showConfirmDialog(null, inputs, "New game options", JOptionPane.OK_CANCEL_OPTION);
+        int result = JOptionPane.showConfirmDialog(null, inputs, "New word", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
             //TODO Jak nacisniesz ok to dodajesz slowo
+            if (wordField.getText().replace(" ", "").isEmpty() || translationField.getText().replace(" ", "").isEmpty()) {
+                JOptionPane.showMessageDialog(null, "One of fields is empty!!!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            Word word = new Word(wordField.getText(), null, "pl");
+            Word translation = new Word(translationField.getText(), word, "eng");
+            word.setTranslation(translation);
+            editorDB.addWord(word);
+            refreshList();
+        }
+    }
+
+    private void refreshList() {
+        list.clearSelection();
+        words.clear();
+        if (languageComboBox.getSelectedItem().toString().equals("Polish")) {
+            words = editorDB.findByLanguage("pl");
+            list.setModel(new CustomListModel(words));
+        } else {
+            words = editorDB.findByLanguage("eng");
+            list.setModel(new CustomListModel(words));
         }
     }
 

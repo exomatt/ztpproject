@@ -449,35 +449,28 @@ public class MainMenu {
             case "2 words":
                 buttons.add(new JButton(questions.get(currentQuestionIndex[0]).getAnwswers().get(0).getWord()));
                 buttons.add(new JButton(questions.get(currentQuestionIndex[0]).getAnwswers().get(1).getWord()));
-                for (JButton button :
-                        buttons) {
-                    bottomPanel.add(button);
-                    int finalMaxWords = maxWords;
-                    button.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            if (button.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
-                                //TODO Jeżeli słowo z przycisku zgadza się to podbijamy indeks currentQuestionIndex i dajemy jakiś punkt czy coś
-                                currentQuestionIndex[0]++;
-                                if (currentQuestionIndex[0] == finalMaxWords) {
-                                    resultPopup();
-                                    frame.dispose();
-                                }
-                                updateUI(buttons, wordToTranslate, questions, currentQuestionIndex[0]);
-
-                            }
-                        }
-                    });
-                }
+                setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex);
                 break;
             case "3 words":
-//                game.setGameDifficulty(new ThreeWordDifficulty());
+                buttons.add(new JButton(questions.get(currentQuestionIndex[0]).getAnwswers().get(0).getWord()));
+                buttons.add(new JButton(questions.get(currentQuestionIndex[0]).getAnwswers().get(1).getWord()));
+                buttons.add(new JButton(questions.get(currentQuestionIndex[0]).getAnwswers().get(2).getWord()));
+                setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex);
                 break;
             case "4 words":
-//                game.setGameDifficulty(new FourWordDifficulty());
+                buttons.add(new JButton(questions.get(currentQuestionIndex[0]).getAnwswers().get(0).getWord()));
+                buttons.add(new JButton(questions.get(currentQuestionIndex[0]).getAnwswers().get(1).getWord()));
+                buttons.add(new JButton(questions.get(currentQuestionIndex[0]).getAnwswers().get(2).getWord()));
+                buttons.add(new JButton(questions.get(currentQuestionIndex[0]).getAnwswers().get(3).getWord()));
+                setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex);
                 break;
             case "5 words":
-//                game.setGameDifficulty(new FiveWordDifficulty());
+                buttons.add(new JButton(questions.get(currentQuestionIndex[0]).getAnwswers().get(0).getWord()));
+                buttons.add(new JButton(questions.get(currentQuestionIndex[0]).getAnwswers().get(1).getWord()));
+                buttons.add(new JButton(questions.get(currentQuestionIndex[0]).getAnwswers().get(2).getWord()));
+                buttons.add(new JButton(questions.get(currentQuestionIndex[0]).getAnwswers().get(3).getWord()));
+                buttons.add(new JButton(questions.get(currentQuestionIndex[0]).getAnwswers().get(4).getWord()));
+                setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex);
                 break;
             case "Write words":
 //                game.setGameDifficulty(new WrittenWordDifficulty());
@@ -504,6 +497,29 @@ public class MainMenu {
         frame.pack();
         frame.setVisible(true);
 
+    }
+
+    private void setupButtons(JFrame frame, JPanel bottomPanel, List<JButton> buttons, JLabel wordToTranslate, int maxWords, List<Question> questions, int[] currentQuestionIndex) {
+        for (JButton button :
+                buttons) {
+            bottomPanel.add(button);
+            int finalMaxWords = maxWords;
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (button.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
+                        //TODO Jeżeli słowo z przycisku zgadza się to podbijamy indeks currentQuestionIndex i dajemy jakiś punkt czy coś
+                        currentQuestionIndex[0]++;
+                        if (currentQuestionIndex[0] == finalMaxWords) {
+                            resultPopup();
+                            frame.dispose();
+                        } else {
+                            updateUI(buttons, wordToTranslate, questions, currentQuestionIndex[0]);
+                        }
+                    }
+                }
+            });
+        }
     }
 
     private void resultPopup() {

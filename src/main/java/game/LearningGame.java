@@ -27,14 +27,14 @@ public class LearningGame {
     /**
      * Create iterator.
      *
-     * @param mode   the mode
+     * @param mode   the mode ->  true value if random is on
      * @param number the number
      */
     public void createIterator(boolean mode, int number) {
         if (mode) {
-            iterator = new AlphabetIterator(questions, number);
-        } else {
             iterator = new RandomIterator(questions, number);
+        } else {
+            iterator = new AlphabetIterator(questions, number);
         }
     }
 

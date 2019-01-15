@@ -1,7 +1,15 @@
 package game;
 
+import lombok.Data;
+
 /**
  * The type Test game.
  */
-public class TestGame {
+@Data
+public class TestGame extends LearningGame {
+    private int point;
+
+    public void incrementPoint() {
+        point++;
+    }
 }

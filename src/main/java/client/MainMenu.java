@@ -4,6 +4,7 @@ import database.DatabaseEditor;
 import database.DatabaseRepository;
 import database.FileDatabase;
 import game.LearningGame;
+import game.TestGame;
 import model.Question;
 import model.Word;
 import state.ForeignPolishState;
@@ -378,28 +379,45 @@ public class MainMenu {
         JTextField userAnswer = new JTextField();
         JLabel wordToTranslate = new JLabel("Word to translate");
         JPanel spacingPanel = new JPanel();
-
         int maxWords = value;
         editorDB = new DatabaseEditor();
-        LearningGame game = new LearningGame();
+        LearningGame game;
+        if (gameType == LEARN) {
+            game = new LearningGame();
+        } else {
+            game = new TestGame();
+        }
         LanguageState languageState;
-        Iterator<Word> iterator = game.getIterator();
-        List<Question> questions = new ArrayList<>();
-        int currentQuestionIndex = 0;
+        if (repo == FILEDB) {
+            editorDB.setDatabase(new FileDatabase());
+        } else {
+            editorDB.setDatabase(new DatabaseRepository());
+        }
 
-        if (langState == 2) {
+        if (langState == POLENG) {
             languageState = new PolishForeignState();
         } else {
             languageState = new ForeignPolishState();
         }
-        editorDB.setDatabase(new FileDatabase());
         game.setLanguageState(languageState);
         game.setQuestions(editorDB.findByLanguage(languageState.getLanguage()));
-        game.createIterator(false, 1);
-        if (value > editorDB.getAllWords().size()) {
+
+        int sizeOfDBWords = game.getQuestions().size();
+
+        if (value > sizeOfDBWords) {
             JOptionPane.showMessageDialog(mainframe, "There are not enough words in your database, you have " + editorDB.getAllWords().size() + "questions");
-            maxWords = editorDB.getAllWords().size();
+            maxWords = sizeOfDBWords;
         }
+        if (iterType.equals("Random")) {
+            game.createIterator(true, maxWords);
+        } else {
+            game.createIterator(false, maxWords);
+        }
+
+        Iterator<Word> iterator = game.getIterator();
+        List<Question> questions = new ArrayList<>();
+        final int[] currentQuestionIndex = {0};
+
         switch (diff) {
             case "2 words":
                 game.setGameDifficulty(new TwoWordDifficulty());
@@ -411,8 +429,10 @@ public class MainMenu {
                     button.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            if (button.getText().equals(questions.get(currentQuestionIndex))) {
-//TODO Jeżeli słowo z przycisku zgadza się to podbijamy indeks currentQuestionIndex i dajemy jakiś punkt czy coś
+                            if (button.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
+                                //TODO Jeżeli słowo z przycisku zgadza się to podbijamy indeks currentQuestionIndex i dajemy jakiś punkt czy coś
+                                currentQuestionIndex[0]++;
+
                             }
                         }
                     });
@@ -477,7 +497,7 @@ public class MainMenu {
         frame.setLayout(new BorderLayout());
         gamePanel.setLayout(new FlowLayout());
         gamePanel.add(wordToTranslate);
-        wordToTranslate.setText("Word to translate:  " + questions.get(currentQuestionIndex).getWordToTranslate().getWord());
+        wordToTranslate.setText("Word to translate:  " + questions.get(currentQuestionIndex[0]).getWordToTranslate().getWord());
 
         bottomPanel.setLayout(new GridLayout());
 

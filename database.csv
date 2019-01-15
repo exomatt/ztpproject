@@ -1,4 +1,3 @@
-kiwi,eng,kiwi,pl
 grape,eng,winogrono,pl
 blackberry,eng,jeżyna,pl
 raspberry,eng,mailna,pl
@@ -7,7 +6,6 @@ lemon,eng,cytryna,pl
 pineapple,eng,ananas,pl
 grapefruit,eng,grejpfrut,pl
 watermelon,eng,arbuz,pl
-melon,eng,melon,pl
 pear,eng,gruszka,pl
 peach,eng,brzoskwinia,pl
 beach,eng,plaża,pl
@@ -52,7 +50,6 @@ back,eng,plecy,pl
 keyboard,eng,klawiatura,pl
 mouse,eng,mysz,pl
 rat,eng,szczur,pl
-zebra,eng,zebra,pl
 elephant,eng,słoń,pl
 dog,eng,pies,pl
 cat,eng,kot,pl
@@ -73,7 +70,6 @@ hamster,eng,chomik,pl
 baloon,eng,balon,pl
 stone,eng,kamień,pl
 iron,eng,żelazo,pl
-metal,eng,metal,pl
 wood,eng,drewno,pl
 tree,eng,drzewo,pl
 pug,eng,mops,pl
@@ -93,6 +89,4 @@ black,eng,czarny,pl
 brown,eng,brązowy,pl
 blue,eng,niebieski,pl
 wiśnia,pl,cherry,eng
-pomarańcza,pl,cos,eng
-pomaracza,pl,oragnaga,eng
 desk,eng,biurko,pl

@@ -298,6 +298,7 @@ public class MainMenu {
             }
             if (current == null) {
                 String language = languageWordComboBox.getSelectedItem().toString();
+                System.out.println(language);
                 Word translation;
                 Word word;
                 if (language.equals("pl")) {

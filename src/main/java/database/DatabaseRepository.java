@@ -16,7 +16,7 @@ import java.util.List;
 public class DatabaseRepository implements DatabaseEditorAdapter {
     public void addWord(Word word) {
         EntityManager entityManager = ConnectionSingleton.getEntityManagerFactory().createEntityManager();
-        log.info("In addWord function in DatabaseRepository");
+        log.info("In addWord function in DatabaseRepository Word: " + word.toString());
         if (checkIfInDB(word)) {
             log.info("Object alredy exists in DB: " + word.toString());
             return;

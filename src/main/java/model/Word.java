@@ -17,8 +17,8 @@ public class Word {
     @Id
     @Column(name = "WORD", nullable = false)
     private String word;
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "WORD")
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "WORDTranslation")
     private Word translation;
     private String language;
 

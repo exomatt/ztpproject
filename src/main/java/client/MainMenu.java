@@ -215,6 +215,9 @@ public class MainMenu {
         list.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
+                if (list.isSelectionEmpty()) {
+                    return;
+                }
                 String temp = (String) list.getSelectedValue();
                 Word current = null;
                 for (Word w : words) {
@@ -246,13 +249,17 @@ public class MainMenu {
                         break;
                     }
                 }
+                if (current == null) {
+                    return;
+                }
                 editorDB.deleteWord(current);
                 words.remove(current);
                 list.setModel(new CustomListModel(words));
-                list.setSelectedIndex(0);
-                wordField.setText(current.getWord());
-                translationField.setText(current.getTranslation().getWord());
-                languageField.setText(current.getLanguage());
+                list.clearSelection();
+                wordField.setText("");
+                translationField.setText("");
+                languageField.setText("");
+                removeButton.setEnabled(false);
             }
         });
         buttonsPanel.setLayout(new GridLayout(3, 1));

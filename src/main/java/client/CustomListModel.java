@@ -56,4 +56,5 @@ public class CustomListModel extends AbstractListModel {
     public Object getElementAt(int index) {
         return arrayList.get(index).getWord();
     }
+
 }

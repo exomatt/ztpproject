@@ -15,6 +15,7 @@ public class FiveWordDifficulty implements Difficulty {
         List<Word> result = new ArrayList<>();
         result.add(word.getTranslation());
         List<Word> wordList = state.getWordList(editor);
+        wordList.remove(word);
         result.addAll(WordRandomizer.getRandomWords(wordList, 4));
         Collections.shuffle(result);
         return result;

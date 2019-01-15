@@ -452,12 +452,17 @@ public class MainMenu {
                 for (JButton button :
                         buttons) {
                     bottomPanel.add(button);
+                    int finalMaxWords = maxWords;
                     button.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             if (button.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
                                 //TODO Jeżeli słowo z przycisku zgadza się to podbijamy indeks currentQuestionIndex i dajemy jakiś punkt czy coś
                                 currentQuestionIndex[0]++;
+                                if (currentQuestionIndex[0] == finalMaxWords) {
+                                    resultPopup();
+                                    frame.dispose();
+                                }
                                 updateUI(buttons, wordToTranslate, questions, currentQuestionIndex[0]);
 
                             }
@@ -499,6 +504,10 @@ public class MainMenu {
         frame.pack();
         frame.setVisible(true);
 
+    }
+
+    private void resultPopup() {
+        JOptionPane.showMessageDialog(mainframe, "Placeholder", "Placeholder", JOptionPane.YES_NO_CANCEL_OPTION);
     }
 
     private void updateUI(List<JButton> buttons, JLabel wordToTranslate, List<Question> questions, int currentQuestionIndex) {

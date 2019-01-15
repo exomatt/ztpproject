@@ -111,7 +111,7 @@ public class MainMenu {
                             if (fileDatabaseRadioButton.isSelected()) {
                                 createGameWindow(TEST, POLENG, FILEDB, difficultyComboBox.getSelectedItem().toString(), iteratorComboBox.getSelectedItem().toString());   //Test, Polish-English, File Database
                             } else {
-                                createGameWindow(TEST, POLENG, REPODB, difficultyComboBox.getSelectedItem().toString(), iteratorComboBox.getSelectedItem().toString());   //Teset, Polish-English, Repo Database
+                                createGameWindow(TEST, POLENG, REPODB, difficultyComboBox.getSelectedItem().toString(), iteratorComboBox.getSelectedItem().toString());   //Test, Polish-English, Repo Database
                             }
                         } else {
                             if (fileDatabaseRadioButton.isSelected()) {
@@ -131,9 +131,9 @@ public class MainMenu {
                 Object[] options = {"File", "Repoistory", "Cancel"};
                 int n = JOptionPane.showOptionDialog(mainframe, "Which database would you like to use", "Edit your words", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
                 if (n == 0) {
-                    createDataBaseWindow();
+                    createDataBaseWindow(FILEDB);
                 } else if (n == 1) {
-                    //TODO Repo
+                    createDataBaseWindow(REPODB);
                 } else {
 
                 }
@@ -147,26 +147,45 @@ public class MainMenu {
         });
     }
 
-    private void createDataBaseWindow() {
+    /**
+     * Method to create the window of the database
+     *
+     * @param source
+     */
+    private void createDataBaseWindow(int source) {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setResizable(false);
         frame.setLocation(10, 10);
         frame.setPreferredSize(new Dimension(400, 400));
-        frame.setLayout(new GridLayout(1, 2));
+        frame.setLayout(new GridBagLayout());
+        GridBagConstraints gc = new GridBagConstraints();
 
         editorDB = new DatabaseEditor();
         editorDB.setDatabase(new FileDatabase());
         List<Word> words = editorDB.getAllWords();
-        //todo zrobienie wyboru jezyka combox do editbase
 
         if (words == null) {
             JOptionPane.showMessageDialog(mainframe, "Problem with database file", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
+        JComboBox<String> languageComboBox = new JComboBox<>(new String[]{"Polish", "English"});
+        gc.fill = GridBagConstraints.HORIZONTAL;
+        gc.gridwidth = 2;
+        gc.weightx = 0.5;
+        gc.weighty = 0.1;
+        gc.gridx = 0;
+        gc.gridy = 0;
+        frame.add(languageComboBox,gc);
+
         CustomListModel model = new CustomListModel(words);
         JList list = new JList(model);
-        frame.add(list);
+        gc.fill = GridBagConstraints.CENTER;
+        gc.gridwidth = 1;
+        gc.gridx = 0;
+        gc.gridy = 1;
+        frame.add(list,gc);
 
         JPanel wordDetail = new JPanel();
         wordDetail.setLayout(new GridLayout(3, 2));
@@ -204,13 +223,25 @@ public class MainMenu {
             }
         });
 
-        frame.add(wordDetail);
+        gc.fill = GridBagConstraints.HORIZONTAL;
+        gc.gridx = 1;
+        gc.gridy = 1;
+        frame.add(wordDetail,gc);
+
         frame.pack();
         frame.setVisible(true);
 
 
     }
 
+    /**
+     * Method to create the window of the game
+     * @param gameType
+     * @param langState
+     * @param repo
+     * @param diff
+     * @param iterType
+     */
     private void createGameWindow(int gameType, int langState, int repo, String diff, String iterType) {
         editorDB = new DatabaseEditor();
         editorDB.setDatabase(new FileDatabase());

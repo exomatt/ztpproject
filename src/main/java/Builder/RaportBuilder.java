@@ -1,13 +1,38 @@
 package Builder;
 
+import model.Word;
+
 import java.util.List;
 
+/**
+ * The interface Raport builder.
+ */
 public interface RaportBuilder {
-    public void addWordToTranslate(String word);
+    /**
+     * Add word to translate.
+     *
+     * @param word the word
+     */
+    public void addWordToTranslate(Word word);
 
-    public void addAnswersList(List<String> answers);
+    /**
+     * Add answers list.
+     *
+     * @param answers the answers
+     */
+    public void addAnswersList(List<Word> answers);
 
-    public void addCorrectAnswer(String correct);
+    /**
+     * Add correct answer.
+     *
+     * @param correct the correct
+     */
+    public void addCorrectAnswer(Word correct);
 
-    public void addUserAnswer(String userAnswer);
+    /**
+     * Add user answer.
+     *
+     * @param userAnswer the user answer
+     */
+    public void addUserAnswer(Word userAnswer);
 }

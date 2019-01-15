@@ -4,6 +4,7 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import model.Word;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,15 +14,18 @@ import java.util.IntSummaryStatistics;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * The type Pdf builder.
+ */
 public class PdfBuilder implements RaportBuilder {
 
-    private List<String> wordsToTranslateList;
-    private List<List<String>> answersList;
-    private List<String> correctAnswers;
-    private List<String> userAnswersList;
+    private List<Word> wordsToTranslateList;
+    private List<List<Word>> answersList;
+    private List<Word> correctAnswers;
+    private List<Word> userAnswersList;
 
     @Override
-    public void addWordToTranslate(String word) {
+    public void addWordToTranslate(Word word) {
         if (wordsToTranslateList == null) {
             wordsToTranslateList = new LinkedList<>();
         }
@@ -29,7 +33,7 @@ public class PdfBuilder implements RaportBuilder {
     }
 
     @Override
-    public void addAnswersList(List<String> answers) {
+    public void addAnswersList(List<Word> answers) {
         if (answersList == null) {
             answersList = new LinkedList<>();
         }
@@ -37,7 +41,7 @@ public class PdfBuilder implements RaportBuilder {
     }
 
     @Override
-    public void addCorrectAnswer(String correct) {
+    public void addCorrectAnswer(Word correct) {
         if (correctAnswers == null) {
             correctAnswers = new LinkedList<>();
         }
@@ -45,15 +49,27 @@ public class PdfBuilder implements RaportBuilder {
     }
 
     @Override
-    public void addUserAnswer(String userAnswer) {
+    public void addUserAnswer(Word userAnswer) {
         if (userAnswersList == null) {
             userAnswersList = new LinkedList<>();
         }
         userAnswersList.add(userAnswer);
     }
 
+    /**
+     * Build pdf string.
+     *
+     * @return the string
+     * @throws FileNotFoundException the file not found exception
+     * @throws DocumentException     the document exception
+     */
     public String buildPdf() throws FileNotFoundException, DocumentException {
-        int[] sizes = {wordsToTranslateList.size(), answersList.size(), correctAnswers.size(), userAnswersList.size()};
+        int[] sizes;
+        if (userAnswersList == null) {
+            sizes = new int[]{wordsToTranslateList.size(), answersList.size(), correctAnswers.size()};
+        } else {
+            sizes = new int[]{wordsToTranslateList.size(), answersList.size(), correctAnswers.size(), userAnswersList.size()};
+        }
         IntSummaryStatistics stat = Arrays.stream(sizes).summaryStatistics();
         int maxSize = stat.getMax();
         Document document = new Document();
@@ -70,17 +86,19 @@ public class PdfBuilder implements RaportBuilder {
 
 
         for (int i = 0; i < maxSize; i++) {
-            Paragraph paragraph = new Paragraph("Word to translate: " + wordsToTranslateList.get(i) + "\n", font);
+            Paragraph paragraph = new Paragraph("Word to translate: " + wordsToTranslateList.get(i).getWord() + "\n", font);
             PdfPTable table = new PdfPTable(1);
             for (int j = 0; j < answersList.get(i).size(); j++) {
                 PdfPCell cell = new PdfPCell();
-                if (answersList.get(i).get(j).equals(correctAnswers.get(i))) {
+                if (answersList.get(i).get(j).getWord().equals(correctAnswers.get(i).getWord())) {
                     cell.setBackgroundColor(BaseColor.GREEN);
                 }
-                if (answersList.get(i).get(j).equals(userAnswersList.get(i))) {
-                    cell.setPhrase(new Phrase(answersList.get(i).get(j), correctAnswerF));
+                if (userAnswersList != null) {
+                    if (answersList.get(i).get(j).equals(userAnswersList.get(i))) {
+                        cell.setPhrase(new Phrase(answersList.get(i).get(j).getWord(), correctAnswerF));
+                    }
                 } else {
-                    cell.setPhrase(new Phrase(answersList.get(i).get(j), answerF));
+                    cell.setPhrase(new Phrase(answersList.get(i).get(j).getWord(), answerF));
                 }
                 table.addCell(cell);
 

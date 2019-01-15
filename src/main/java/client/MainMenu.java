@@ -1,5 +1,9 @@
 package client;
 
+import Builder.PdfBuilder;
+import Builder.RaportBuilder;
+import Builder.TxtBuilder;
+import com.itextpdf.text.DocumentException;
 import database.DatabaseEditor;
 import database.DatabaseRepository;
 import database.FileDatabase;
@@ -17,8 +21,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -38,11 +42,6 @@ public class MainMenu {
     private static final int POLENG = 2;
     private static final int ENGPOL = 3;
     private final JFrame mainframe;
-    private JButton exitButton = new JButton("Exit");
-    private JButton startButton = new JButton("Start");
-    private JButton editButton = new JButton("Edit your words");
-    private JButton continueButton = new JButton("Continue");
-    private CustomListModel model;
     private JList list;
     private List<Word> words;
     private JComboBox<String> languageComboBox;
@@ -58,9 +57,13 @@ public class MainMenu {
         mainframe.setPreferredSize(new Dimension(500, 500));
         GridLayout gridLayout = new GridLayout(4, 1);
         mainframe.setLayout(gridLayout);
+        JButton startButton = new JButton("Start");
         mainframe.add(startButton);
+        JButton continueButton = new JButton("Continue");
         mainframe.add(continueButton);
+        JButton editButton = new JButton("Edit your words");
         mainframe.add(editButton);
+        JButton exitButton = new JButton("Exit");
         mainframe.add(exitButton);
         mainframe.pack();
         mainframe.setVisible(true);
@@ -194,7 +197,7 @@ public class MainMenu {
             JOptionPane.showMessageDialog(mainframe, "Problem with database file", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        model = new CustomListModel(words);
+        CustomListModel model = new CustomListModel(words);
         list = new JList(model);
 
         languageComboBox = new JComboBox<>(new String[]{"Polish", "English"});
@@ -495,27 +498,24 @@ public class MainMenu {
 
     private void setupTextField(JFrame frame, JPanel bottomPanel, JTextField userAnswer, JLabel wordToTranslate, int maxWords, List<Question> questions, int[] currentQuestionIndex, LearningGame game) {
         bottomPanel.add(userAnswer);
-        userAnswer.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (game.isIfTest()) {
-                    checkIfCorrectAnswer(userAnswer.getText(), questions, currentQuestionIndex, game);
+        userAnswer.addActionListener(e -> {
+            if (game.isIfTest()) {
+                checkIfCorrectAnswer(userAnswer.getText(), questions, currentQuestionIndex, game);
+                userAnswer.setText("");
+
+            } else {
+                if (userAnswer.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
+                    questions.get(currentQuestionIndex[0]).setPickByUser(userAnswer.getText());
+                    currentQuestionIndex[0]++;
                     userAnswer.setText("");
 
-                } else {
-                    if (userAnswer.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
-                        questions.get(currentQuestionIndex[0]).setPickByUser(userAnswer.getText());
-                        currentQuestionIndex[0]++;
-                        userAnswer.setText("");
-
-                    }
                 }
-                if (currentQuestionIndex[0] == maxWords) {
-                    resultPopup();
-                    frame.dispose();
-                } else {
-                    wordToTranslate.setText("Word to translate:  " + questions.get(currentQuestionIndex[0]).getWordToTranslate().getWord());
-                }
+            }
+            if (currentQuestionIndex[0] == maxWords) {
+                resultPopup(questions);
+                frame.dispose();
+            } else {
+                wordToTranslate.setText("Word to translate:  " + questions.get(currentQuestionIndex[0]).getWordToTranslate().getWord());
             }
         });
     }
@@ -524,25 +524,22 @@ public class MainMenu {
         for (JButton button :
                 buttons) {
             bottomPanel.add(button);
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (game.isIfTest()) {
-                        checkIfCorrectAnswer(button.getText(), questions, currentQuestionIndex, game);
+            button.addActionListener(e -> {
+                if (game.isIfTest()) {
+                    checkIfCorrectAnswer(button.getText(), questions, currentQuestionIndex, game);
 
-                    } else {
-                        if (button.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
-                            //TODO Jeżeli słowo z przycisku zgadza się to podbijamy indeks currentQuestionIndex i dajemy jakiś punkt czy coś
-                            questions.get(currentQuestionIndex[0]).setPickByUser(button.getText());
-                            currentQuestionIndex[0]++;
-                        }
+                } else {
+                    if (button.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
+                        //TODO Jeżeli słowo z przycisku zgadza się to podbijamy indeks currentQuestionIndex i dajemy jakiś punkt czy coś
+                        questions.get(currentQuestionIndex[0]).setPickByUser(button.getText());
+                        currentQuestionIndex[0]++;
                     }
-                    if (currentQuestionIndex[0] == maxWords) {
-                        resultPopup();
-                        frame.dispose();
-                    } else {
-                        updateUI(buttons, wordToTranslate, questions, currentQuestionIndex[0]);
-                    }
+                }
+                if (currentQuestionIndex[0] == maxWords) {
+                    resultPopup(questions);
+                    frame.dispose();
+                } else {
+                    updateUI(buttons, wordToTranslate, questions, currentQuestionIndex[0]);
                 }
             });
         }
@@ -557,8 +554,35 @@ public class MainMenu {
         currentQuestionIndex[0]++;
     }
 
-    private void resultPopup() {
-        JOptionPane.showMessageDialog(mainframe, "Placeholder", "Placeholder", JOptionPane.YES_NO_CANCEL_OPTION);
+    private void resultPopup(List<Question> questions) {
+        RaportBuilder builder = null;
+        Object[] options = {"TXT", "PDF", "Don't save"};
+        int n = JOptionPane.showOptionDialog(mainframe, "How would you like to save?", "Save your results", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        if (n == 0) {
+            builder = new TxtBuilder();
+        } else if (n == 1) {
+            builder = new PdfBuilder();
+        }
+        if (n != 2) {
+            for (Question q : questions) {
+                builder.addWordToTranslate(q.getWordToTranslate());
+                builder.addAnswersList(q.getAnwswers());
+                builder.addCorrectAnswer(q.getWordToTranslate().getTranslation());
+            }
+        }
+        if (n == 0) {
+            try {
+                JOptionPane.showMessageDialog(mainframe, "Your file has been saved to " + ((TxtBuilder) builder).buildTxt());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if (n == 1) {
+            try {
+                JOptionPane.showMessageDialog(mainframe, "Your file has been saved to " + ((PdfBuilder) builder).buildPdf());
+            } catch (FileNotFoundException | DocumentException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void updateUI(List<JButton> buttons, JLabel wordToTranslate, List<Question> questions, int currentQuestionIndex) {

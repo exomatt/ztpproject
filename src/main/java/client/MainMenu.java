@@ -412,7 +412,7 @@ public class MainMenu {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             if (button.getText().equals(questions.get(currentQuestionIndex))) {
-
+//TODO Jeżeli słowo z przycisku zgadza się to podbijamy indeks currentQuestionIndex i dajemy jakiś punkt czy coś
                             }
                         }
                     });

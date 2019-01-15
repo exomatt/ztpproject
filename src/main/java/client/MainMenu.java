@@ -11,6 +11,8 @@ import state.PolishForeignState;
 import strategy.*;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
@@ -23,6 +25,8 @@ import java.util.List;
  */
 public class MainMenu {
 
+    private static final int MIN_QUESTIONS = 2;
+    private static final int MAX_QUESTIONS = 25;
     private static final int FILEDB = 4;
     private static final int REPODB = 5;
     private DatabaseEditor editorDB;
@@ -83,7 +87,18 @@ public class MainMenu {
 
                     JComboBox<String> difficultyComboBox = new JComboBox<>(new String[]{"2 words", "3 words", "4 words", "5 words", "Write words"});
                     JComboBox<String> iteratorComboBox = new JComboBox<>(new String[]{"Random", "Alphabet"});
-                    final JComponent[] inputs = new JComponent[]{
+            JSlider questionsAmountSlider = new JSlider(MIN_QUESTIONS, MAX_QUESTIONS);
+            JLabel amountLabel = new JLabel(String.valueOf(questionsAmountSlider.getValue()));
+            questionsAmountSlider.setMajorTickSpacing(5);
+            questionsAmountSlider.setMinorTickSpacing(1);
+            questionsAmountSlider.setPaintTicks(true);
+            questionsAmountSlider.addChangeListener(new ChangeListener() {
+                @Override
+                public void stateChanged(ChangeEvent e) {
+                    amountLabel.setText(String.valueOf(questionsAmountSlider.getValue()));
+                }
+            });
+            final JComponent[] inputs = new JComponent[]{
                             new JLabel("Choose your languages"),
                             polEngRadioButton,
                             engPolRadioButton,
@@ -96,36 +111,42 @@ public class MainMenu {
                             new JLabel("Choose your difficulty"),
                             difficultyComboBox,
                             new JLabel("Questions sorted randomly or alphabetically"),
-                            iteratorComboBox
+                    iteratorComboBox,
+                    new JLabel("How many questions?"),
+                    amountLabel,
+                    questionsAmountSlider
                     };
                     int result = JOptionPane.showConfirmDialog(null, inputs, "New game options", JOptionPane.OK_CANCEL_OPTION);
                     if (result == JOptionPane.OK_OPTION) {
+                        String gameDifficulty = difficultyComboBox.getSelectedItem().toString();
+                        String iterType = iteratorComboBox.getSelectedItem().toString();
+                        int questionsAmount = questionsAmountSlider.getValue();
                         if (learnRadioButton.isSelected()) {
                             if (polEngRadioButton.isSelected()) {
                                 if (fileDatabaseRadioButton.isSelected()) {
-                                    createGameWindow(LEARN, POLENG, FILEDB, difficultyComboBox.getSelectedItem().toString(), iteratorComboBox.getSelectedItem().toString());   ///Learn, Polish-English, File Database
+                                    createGameWindow(LEARN, POLENG, FILEDB, gameDifficulty, iterType, questionsAmount);   ///Learn, Polish-English, File Database
                                 } else {
-                                    createGameWindow(LEARN, POLENG, REPODB, difficultyComboBox.getSelectedItem().toString(), iteratorComboBox.getSelectedItem().toString());   ///Learn, Polish-English, Repo Database
+                                    createGameWindow(LEARN, POLENG, REPODB, gameDifficulty, iterType, questionsAmount);   ///Learn, Polish-English, Repo Database
                                 }
                             } else {
                                 if (fileDatabaseRadioButton.isSelected()) {
-                                    createGameWindow(LEARN, ENGPOL, FILEDB, difficultyComboBox.getSelectedItem().toString(), iteratorComboBox.getSelectedItem().toString());   //Learn, English-Polish, File Database
+                                    createGameWindow(LEARN, ENGPOL, FILEDB, gameDifficulty, iterType, questionsAmount);   //Learn, English-Polish, File Database
                                 } else {
-                                    createGameWindow(LEARN, ENGPOL, REPODB, difficultyComboBox.getSelectedItem().toString(), iteratorComboBox.getSelectedItem().toString());   //Learn, English-Polish, Repo Database
+                                    createGameWindow(LEARN, ENGPOL, REPODB, gameDifficulty, iterType, questionsAmount);   //Learn, English-Polish, Repo Database
                                 }
                             }
                         } else {
                             if (polEngRadioButton.isSelected()) {
                                 if (fileDatabaseRadioButton.isSelected()) {
-                                    createGameWindow(TEST, POLENG, FILEDB, difficultyComboBox.getSelectedItem().toString(), iteratorComboBox.getSelectedItem().toString());   //Test, Polish-English, File Database
+                                    createGameWindow(TEST, POLENG, FILEDB, gameDifficulty, iterType, questionsAmount);   //Test, Polish-English, File Database
                                 } else {
-                                    createGameWindow(TEST, POLENG, REPODB, difficultyComboBox.getSelectedItem().toString(), iteratorComboBox.getSelectedItem().toString());   //Test, Polish-English, Repo Database
+                                    createGameWindow(TEST, POLENG, REPODB, gameDifficulty, iterType, questionsAmount);   //Test, Polish-English, Repo Database
                                 }
                             } else {
                                 if (fileDatabaseRadioButton.isSelected()) {
-                                    createGameWindow(TEST, ENGPOL, FILEDB, difficultyComboBox.getSelectedItem().toString(), iteratorComboBox.getSelectedItem().toString());   //Test, English-Polish, File Database
+                                    createGameWindow(TEST, ENGPOL, FILEDB, gameDifficulty, iterType, questionsAmount);   //Test, English-Polish, File Database
                                 } else {
-                                    createGameWindow(TEST, ENGPOL, REPODB, difficultyComboBox.getSelectedItem().toString(), iteratorComboBox.getSelectedItem().toString());   //Test, English-Polish, Repo Database
+                                    createGameWindow(TEST, ENGPOL, REPODB, gameDifficulty, iterType, questionsAmount);   //Test, English-Polish, Repo Database
                                 }
                             }
                         }
@@ -175,13 +196,7 @@ public class MainMenu {
 
         languageComboBox = new JComboBox<>(new String[]{"Polish", "English"});
         languageComboBox.addItemListener(e -> {
-            if (languageComboBox.getSelectedItem().toString().equals("Polish")) {
-                words = editorDB.findByLanguage("pl");
-                list.setModel(new CustomListModel(words));
-            } else {
-                words = editorDB.findByLanguage("eng");
-                list.setModel(new CustomListModel(words));
-            }
+            setWordsByLanguage();
         });
         gc.weightx = 0.5;
         gc.gridwidth = 3;
@@ -325,6 +340,10 @@ public class MainMenu {
     private void refreshList() {
         list.clearSelection();
         words.clear();
+        setWordsByLanguage();
+    }
+
+    private void setWordsByLanguage() {
         if (languageComboBox.getSelectedItem().toString().equals("Polish")) {
             words = editorDB.findByLanguage("pl");
             list.setModel(new CustomListModel(words));
@@ -348,7 +367,7 @@ public class MainMenu {
 
 
     /////////// CREATE GAME WINDOW
-    private void createGameWindow(int gameType, int langState, int repo, String diff, String iterType) {
+    private void createGameWindow(int gameType, int langState, int repo, String diff, String iterType, int value) {
         editorDB = new DatabaseEditor();
         editorDB.setDatabase(new FileDatabase());
         LearningGame game = new LearningGame();
@@ -394,18 +413,15 @@ public class MainMenu {
         JLabel wordToTranslate = new JLabel("Word to translate");
         gamePanel.setLayout(new FlowLayout());
         gamePanel.add(wordToTranslate);
-
-        while (iterator.hasNext()) {
-            componentList.clear();
-            Word word = iterator.next();
-            wordToTranslate.setText("Word to translate:  " + word.getWord());
-            List<Word> answerWords = game.getGameDifficulty().getAnswerWords(word, editorDB, game.getLanguageState());
-            for (Word answerWord : answerWords) {
-                componentList.add(new JButton(answerWord.getWord()));
-            }
+        Word word = iterator.next();
+        wordToTranslate.setText("Word to translate:  " + word.getWord());
+        List<Word> answerWords = game.getGameDifficulty().getAnswerWords(word, editorDB, game.getLanguageState());
+//        for (Word answerWord : answerWords) {
+//                componentList.add(new JButton(answerWord.getWord()));
+//        }
+        componentList.add(new JTextField());
             //todo musi sie zatrzymac
 
-        }
         bottomPanel.setLayout(new GridLayout());
         for (JComponent component : componentList) {
             bottomPanel.add(component);

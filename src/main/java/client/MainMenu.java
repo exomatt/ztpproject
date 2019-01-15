@@ -14,8 +14,6 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -149,12 +147,12 @@ public class MainMenu {
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setResizable(false);
         frame.setLocation(10, 10);
-        frame.setPreferredSize(new Dimension(400, 400));
         frame.setLayout(new GridBagLayout());
         GridBagConstraints gc = new GridBagConstraints();
         gc.fill = GridBagConstraints.HORIZONTAL;
 
-        JButton removeButton = new JButton("Remove");
+        JButton editWordButton = new JButton("Edit");
+        JButton removeWordButton = new JButton("Remove");
         editorDB = new DatabaseEditor();
         if (source == REPODB) {
             editorDB.setDatabase(new DatabaseRepository());
@@ -181,14 +179,14 @@ public class MainMenu {
                 list.setModel(new CustomListModel(plWords));
             }
         });
-
-        gc.gridwidth = 3;
         gc.weightx = 0.5;
+        gc.gridwidth = 3;
         gc.gridx = 0;
         gc.gridy = 0;
         frame.add(languageComboBox,gc);
 
         gc.gridwidth = 1;
+        gc.weighty = 1;
         gc.gridx = 0;
         gc.gridy = 1;
         JScrollPane listScroll = new JScrollPane(list);
@@ -215,61 +213,83 @@ public class MainMenu {
         list.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
-                String temp = (String) list.getSelectedValue();
-                Word current = null;
-                for (Word w : words) {
-                    if (w.getWord().equals(temp)) {
-                        current = w;
-                        break;
-                    }
-                }
+                Word current = getCurrentWord(words, list);
                 wordField.setText(current.getWord());
                 translationField.setText(current.getTranslation().getWord());
                 languageField.setText(current.getLanguage());
-                removeButton.setEnabled(true);
+                editWordButton.setEnabled(true);
+                removeWordButton.setEnabled(true);
             }
         });
         gc.gridx = 1;
+
         JPanel buttonsPanel = new JPanel();
-        JButton addButton = new JButton("Add");
-        JButton editButton = new JButton("Edit");
-        editButton.setEnabled(false);
-        removeButton.setEnabled(false);
-        removeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String temp = (String) list.getSelectedValue();
-                Word current = null;
-                for (Word w : words) {
-                    if (w.getWord().equals(temp)) {
-                        current = w;
-                        break;
-                    }
-                }
-                editorDB.deleteWord(current);
-                words.remove(current);
-                list.setModel(new CustomListModel(words));
-                list.setSelectedIndex(0);
-                wordField.setText(current.getWord());
-                translationField.setText(current.getTranslation().getWord());
-                languageField.setText(current.getLanguage());
-            }
+        JButton addWordButton = new JButton("Add");
+        addWordButton.addActionListener(e -> {
+            createWordPopup();
+        });
+        editWordButton.setEnabled(false);
+        editWordButton.addActionListener(e -> {
+            Word current = getCurrentWord(words, list);
+            createWordPopup(current);
+        });
+        removeWordButton.setEnabled(false);
+        removeWordButton.addActionListener(e -> {
+            Word current = getCurrentWord(words, list);
+            editorDB.deleteWord(current);
+            words.remove(current);
+            list.setModel(new CustomListModel(words));
+            list.setSelectedIndex(0);
+            wordField.setText(current.getWord());
+            translationField.setText(current.getTranslation().getWord());
+            languageField.setText(current.getLanguage());
         });
         buttonsPanel.setLayout(new GridLayout(3, 1));
-        buttonsPanel.add(addButton);
-        buttonsPanel.add(editButton);
-        buttonsPanel.add(removeButton);
+        buttonsPanel.add(addWordButton);
+        buttonsPanel.add(editWordButton);
+        buttonsPanel.add(removeWordButton);
         frame.add(buttonsPanel, gc);
-
 
         gc.gridx = 2;
         frame.add(wordDetail,gc);
 
-
         frame.pack();
         frame.setVisible(true);
+    }
 
+    private void createWordPopup() {
+        createWordPopup(null);
+    }
 
+    private void createWordPopup(Word current) {
+        JTextField wordField = new JTextField();
+        JTextField translationField = new JTextField();
+        if (current != null) {
+            wordField.setText(current.getWord());
+            translationField.setText(current.getTranslation().getWord());
+        }
+        final JComponent[] inputs = new JComponent[]{
+                new JLabel("Your word"),
+                wordField,
+                new JLabel("Translation"),
+                translationField
+        };
+        int result = JOptionPane.showConfirmDialog(null, inputs, "New game options", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            //TODO Jak nacisniesz ok to dodajesz slowo
+        }
+    }
+
+    private Word getCurrentWord(List<Word> words, JList list) {
+        String temp = (String) list.getSelectedValue();
+        Word current = null;
+        for (Word w : words) {
+            if (w.getWord().equals(temp)) {
+                current = w;
+                break;
+            }
+        }
+        return current;
     }
 
 

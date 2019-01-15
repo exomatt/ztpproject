@@ -176,11 +176,11 @@ public class MainMenu {
         languageComboBox = new JComboBox<>(new String[]{"Polish", "English"});
         languageComboBox.addItemListener(e -> {
             if (languageComboBox.getSelectedItem().toString().equals("Polish")) {
-                List<Word> plWords = editorDB.findByLanguage("pl");
-                list.setModel(new CustomListModel(plWords));
+                words = editorDB.findByLanguage("pl");
+                list.setModel(new CustomListModel(words));
             } else {
-                List<Word> plWords = editorDB.findByLanguage("eng");
-                list.setModel(new CustomListModel(plWords));
+                words = editorDB.findByLanguage("eng");
+                list.setModel(new CustomListModel(words));
             }
         });
         gc.weightx = 0.5;
@@ -291,16 +291,33 @@ public class MainMenu {
         }
         int result = JOptionPane.showConfirmDialog(null, inputs.toArray(), "New word", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
-            //TODO Jak nacisniesz ok to dodajesz slowo
+            //TODO zmiana by słowo nie było dostepne a tylko translakcja
             if (wordField.getText().replace(" ", "").isEmpty() || translationField.getText().replace(" ", "").isEmpty()) {
                 JOptionPane.showMessageDialog(null, "One of fields is empty!!!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            Word word = new Word(wordField.getText(), null, "pl");
-            Word translation = new Word(translationField.getText(), word, "eng");
-            word.setTranslation(translation);
-            editorDB.addWord(word);
-            refreshList();
+            if (current == null) {
+                String language = languageWordComboBox.getSelectedItem().toString();
+                Word translation;
+                Word word;
+                if (language.equals("pl")) {
+                    word = new Word(wordField.getText(), null, "pl");
+                    translation = new Word(translationField.getText(), word, "eng");
+                } else {
+                    word = new Word(wordField.getText(), null, "eng");
+                    translation = new Word(translationField.getText(), word, "pl");
+                }
+                word.setTranslation(translation);
+                editorDB.addWord(word);
+                refreshList();
+            } else {
+                Word translation = new Word(translationField.getText(), current, current.getTranslation().getLanguage());
+                current.setTranslation(translation);
+                editorDB.changeWorldTranslation(current);
+                refreshList();
+            }
+
+
         }
     }
 

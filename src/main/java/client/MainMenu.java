@@ -159,6 +159,8 @@ public class MainMenu {
         });
     }
 
+
+    //// CREATE DATABASE WINDOW
     private void createDataBaseWindow(int source) {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -167,7 +169,7 @@ public class MainMenu {
         frame.setPreferredSize(new Dimension(400, 400));
         frame.setLayout(new GridBagLayout());
         GridBagConstraints gc = new GridBagConstraints();
-
+        //TODO Zaleznie od zrodla ustawiac wlasciwy jezyk
         editorDB = new DatabaseEditor();
         editorDB.setDatabase(new FileDatabase());
         List<Word> words = editorDB.getAllWords();
@@ -186,13 +188,15 @@ public class MainMenu {
         gc.gridy = 0;
         frame.add(languageComboBox,gc);
 
+
         CustomListModel model = new CustomListModel(words);
         JList list = new JList(model);
         gc.fill = GridBagConstraints.CENTER;
         gc.gridwidth = 1;
         gc.gridx = 0;
         gc.gridy = 1;
-        frame.add(list,gc);
+        JScrollPane listScroll = new JScrollPane(list);
+        frame.add(listScroll, gc);
 
         JPanel wordDetail = new JPanel();
         wordDetail.setLayout(new GridLayout(3, 2));
@@ -241,16 +245,19 @@ public class MainMenu {
 
     }
 
+
+    /////////// CREATE GAME WINDOW
     private void createGameWindow(int gameType, int langState, int repo, String diff, String iterType) {
         editorDB = new DatabaseEditor();
         editorDB.setDatabase(new FileDatabase());
         LearningGame game = new LearningGame();
-        JFrame frame = new JFrame();
+
+        JFrame frame = new JFrame("Game");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setResizable(false);
         frame.setLocation(10, 10);
-        frame.setPreferredSize(new Dimension(400, 400));
         frame.setLayout(new BorderLayout());
+
         JPanel gamePanel = new JPanel();
         JPanel bottomPanel = new JPanel();
         ArrayList<JComponent> componentList = new ArrayList<>();
@@ -303,8 +310,11 @@ public class MainMenu {
             bottomPanel.add(component);
         }
 
-        frame.add(gamePanel, BorderLayout.CENTER);
-        frame.add(bottomPanel, BorderLayout.PAGE_END);
+        frame.add(gamePanel, BorderLayout.NORTH);
+        JPanel spacingPanel = new JPanel();
+        spacingPanel.setPreferredSize(new Dimension(300, 100));
+        frame.add(spacingPanel, BorderLayout.CENTER);
+        frame.add(bottomPanel, BorderLayout.SOUTH);
         frame.pack();
         frame.setVisible(true);
 

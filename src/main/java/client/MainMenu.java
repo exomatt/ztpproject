@@ -1,6 +1,7 @@
 package client;
 
 import database.DatabaseEditor;
+import database.DatabaseRepository;
 import database.FileDatabase;
 import game.LearningGame;
 import model.Word;
@@ -11,10 +12,7 @@ import strategy.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -169,17 +167,36 @@ public class MainMenu {
         frame.setPreferredSize(new Dimension(400, 400));
         frame.setLayout(new GridBagLayout());
         GridBagConstraints gc = new GridBagConstraints();
-        //TODO Zaleznie od zrodla ustawiac wlasciwy jezyk
+
         editorDB = new DatabaseEditor();
-        editorDB.setDatabase(new FileDatabase());
-        List<Word> words = editorDB.getAllWords();
+        if (source == REPODB) {
+            editorDB.setDatabase(new DatabaseRepository());
+        } else {
+            editorDB.setDatabase(new FileDatabase());
+        }
+
+        List<Word> words = editorDB.findByLanguage("pl");
 
         if (words == null) {
             JOptionPane.showMessageDialog(mainframe, "Problem with database file", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        CustomListModel model = new CustomListModel(words);
+        JList list = new JList(model);
 
         JComboBox<String> languageComboBox = new JComboBox<>(new String[]{"Polish", "English"});
+        languageComboBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (languageComboBox.getSelectedItem().toString().equals("Polish")) {
+                    List<Word> plWords = editorDB.findByLanguage("pl");
+                    list.setModel(new CustomListModel(plWords));
+                } else {
+                    List<Word> plWords = editorDB.findByLanguage("eng");
+                    list.setModel(new CustomListModel(plWords));
+                }
+            }
+        });
         gc.fill = GridBagConstraints.HORIZONTAL;
         gc.gridwidth = 2;
         gc.weightx = 0.5;
@@ -189,8 +206,6 @@ public class MainMenu {
         frame.add(languageComboBox,gc);
 
 
-        CustomListModel model = new CustomListModel(words);
-        JList list = new JList(model);
         gc.fill = GridBagConstraints.CENTER;
         gc.gridwidth = 1;
         gc.gridx = 0;

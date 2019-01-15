@@ -7,6 +7,10 @@ import javax.persistence.Persistence;
  * The type Connection singleton.
  */
 public class ConnectionSingleton {
+
+    private ConnectionSingleton() {
+    }
+
     private static EntityManagerFactory entityManagerFactory;
 
     private static EntityManagerFactory buildEntityManagerFactory() {

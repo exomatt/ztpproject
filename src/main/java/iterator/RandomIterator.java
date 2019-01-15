@@ -7,10 +7,25 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * The type Random iterator.
+ */
 public class RandomIterator implements Iterator<Word> {
+    /**
+     * The Word list.
+     */
     List<Word> wordList = new ArrayList<>();
+    /**
+     * The Position.
+     */
     int position;
 
+    /**
+     * Instantiates a new Random iterator.
+     *
+     * @param listFromDB the list from db
+     * @param number     the number
+     */
     public RandomIterator(List<Word> listFromDB, int number) {
         position = 0;
         Collections.shuffle(listFromDB);

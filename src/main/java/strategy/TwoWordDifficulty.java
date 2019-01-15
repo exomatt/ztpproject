@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * The type Two word difficulty.
+ */
 public class TwoWordDifficulty implements Difficulty {
 
     @Override

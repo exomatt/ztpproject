@@ -9,6 +9,9 @@ import javax.persistence.Query;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * The type Database repository.
+ */
 @Log
 public class DatabaseRepository implements DatabaseEditorAdapter {
     public void addWord(Word word) {

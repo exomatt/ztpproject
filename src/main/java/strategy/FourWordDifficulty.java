@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * The type Four word difficulty.
+ */
 public class FourWordDifficulty implements Difficulty {
     @Override
     public List<Word> getAnswerWords(Word word, DatabaseEditor editor, LanguageState state) {

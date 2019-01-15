@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * The type Five word difficulty.
+ */
 public class FiveWordDifficulty implements Difficulty {
 
     @Override

@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import javax.persistence.*;
 
+/**
+ * The type Word.
+ */
 @Getter
 @Setter
 @Entity
@@ -19,6 +22,9 @@ public class Word {
     private Word translation;
     private String language;
 
+    /**
+     * Instantiates a new Word.
+     */
     public Word() {
     }
 

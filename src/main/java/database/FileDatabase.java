@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * The type File database.
+ */
 @Log
 public class FileDatabase implements DatabaseEditorAdapter {
     private final String filePath = "database.csv";

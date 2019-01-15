@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * The type Written word difficulty.
+ */
 public class WrittenWordDifficulty implements Difficulty {
 
     @Override

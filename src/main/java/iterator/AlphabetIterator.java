@@ -8,11 +8,26 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * The type Alphabet iterator.
+ */
 @Log
 public class AlphabetIterator implements Iterator<Word> {
+    /**
+     * The Word list.
+     */
     List<Word> wordList;
+    /**
+     * The Position.
+     */
     int position;
 
+    /**
+     * Instantiates a new Alphabet iterator.
+     *
+     * @param listFromDB the list from db
+     * @param number     the number
+     */
     public AlphabetIterator(List<Word> listFromDB, int number) {
         position = 0;
         if (listFromDB.size() > number) {

@@ -12,6 +12,9 @@ import strategy.Difficulty;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * The type Learning game.
+ */
 @NoArgsConstructor
 @Data
 public class LearningGame {
@@ -21,6 +24,12 @@ public class LearningGame {
     private RaportBuilder raportBuilder;
     private Iterator<Word> iterator;
 
+    /**
+     * Create iterator.
+     *
+     * @param mode   the mode
+     * @param number the number
+     */
     public void createIterator(boolean mode, int number) {
         if (mode) {
             iterator = new AlphabetIterator(questions, number);
@@ -28,7 +37,6 @@ public class LearningGame {
             iterator = new RandomIterator(questions, number);
         }
     }
-
 
 
 }

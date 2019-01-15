@@ -5,6 +5,9 @@ import model.Word;
 
 import java.util.List;
 
+/**
+ * The type Foreign polish state.
+ */
 public class ForeignPolishState extends LanguageState {
 
     @Override

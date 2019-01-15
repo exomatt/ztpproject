@@ -4,6 +4,7 @@ import database.DatabaseEditor;
 import database.DatabaseRepository;
 import database.FileDatabase;
 import game.LearningGame;
+import model.Question;
 import model.Word;
 import state.ForeignPolishState;
 import state.LanguageState;
@@ -16,6 +17,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -368,67 +371,117 @@ public class MainMenu {
 
     /////////// CREATE GAME WINDOW
     private void createGameWindow(int gameType, int langState, int repo, String diff, String iterType, int value) {
-        editorDB = new DatabaseEditor();
-        editorDB.setDatabase(new FileDatabase());
-        LearningGame game = new LearningGame();
-
         JFrame frame = new JFrame("Game");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setResizable(false);
-        frame.setLocation(10, 10);
-        frame.setLayout(new BorderLayout());
-
         JPanel gamePanel = new JPanel();
         JPanel bottomPanel = new JPanel();
-        ArrayList<JComponent> componentList = new ArrayList<>();
-        switch (diff) {
-            case "2 words":
-                game.setGameDifficulty(new TwoWordDifficulty());
-                break;
-            case "3 words":
-                game.setGameDifficulty(new ThreeWordDifficulty());
-                break;
-            case "4 words":
-                game.setGameDifficulty(new FourWordDifficulty());
-                break;
-            case "5 words":
-                game.setGameDifficulty(new FiveWordDifficulty());
-                break;
-            case "Write words":
-                game.setGameDifficulty(new WrittenWordDifficulty());
-                break;
-            default:
-                game.setGameDifficulty(new TwoWordDifficulty());
-        }
+        List<JButton> buttons = new ArrayList<>();
+        JTextField userAnswer = new JTextField();
+        JLabel wordToTranslate = new JLabel("Word to translate");
+        JPanel spacingPanel = new JPanel();
+
+        int maxWords = value;
+        editorDB = new DatabaseEditor();
+        LearningGame game = new LearningGame();
         LanguageState languageState;
+        Iterator<Word> iterator = game.getIterator();
+        List<Question> questions = new ArrayList<>();
+        int currentQuestionIndex = 0;
+
         if (langState == 2) {
             languageState = new PolishForeignState();
         } else {
             languageState = new ForeignPolishState();
         }
+        editorDB.setDatabase(new FileDatabase());
         game.setLanguageState(languageState);
         game.setQuestions(editorDB.findByLanguage(languageState.getLanguage()));
         game.createIterator(false, 1);
-        Iterator<Word> iterator = game.getIterator();
-        JLabel wordToTranslate = new JLabel("Word to translate");
-        gamePanel.setLayout(new FlowLayout());
-        gamePanel.add(wordToTranslate);
-        Word word = iterator.next();
-        wordToTranslate.setText("Word to translate:  " + word.getWord());
-        List<Word> answerWords = game.getGameDifficulty().getAnswerWords(word, editorDB, game.getLanguageState());
-//        for (Word answerWord : answerWords) {
-//                componentList.add(new JButton(answerWord.getWord()));
-//        }
-        componentList.add(new JTextField());
-            //todo musi sie zatrzymac
+        if (value > editorDB.getAllWords().size()) {
+            JOptionPane.showMessageDialog(mainframe, "There are not enough words in your database, you have " + editorDB.getAllWords().size() + "questions");
+            maxWords = editorDB.getAllWords().size();
+        }
+        switch (diff) {
+            case "2 words":
+                game.setGameDifficulty(new TwoWordDifficulty());
+                buttons.add(new JButton("1"));
+                buttons.add(new JButton("2"));
+                for (JButton button :
+                        buttons) {
+                    bottomPanel.add(button);
+                    button.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            if (button.getText().equals(questions.get(currentQuestionIndex))) {
 
-        bottomPanel.setLayout(new GridLayout());
-        for (JComponent component : componentList) {
-            bottomPanel.add(component);
+                            }
+                        }
+                    });
+                }
+                break;
+            case "3 words":
+                game.setGameDifficulty(new ThreeWordDifficulty());
+                buttons.add(new JButton("1"));
+                buttons.add(new JButton("2"));
+                buttons.add(new JButton("3"));
+                for (JButton button :
+                        buttons) {
+                    bottomPanel.add(button);
+                }
+                break;
+            case "4 words":
+                game.setGameDifficulty(new FourWordDifficulty());
+                buttons.add(new JButton("1"));
+                buttons.add(new JButton("2"));
+                buttons.add(new JButton("3"));
+                buttons.add(new JButton("4"));
+                for (JButton button :
+                        buttons) {
+                    bottomPanel.add(button);
+                }
+                break;
+            case "5 words":
+                game.setGameDifficulty(new FiveWordDifficulty());
+                buttons.add(new JButton("1"));
+                buttons.add(new JButton("2"));
+                buttons.add(new JButton("3"));
+                buttons.add(new JButton("4"));
+                buttons.add(new JButton("5"));
+                for (JButton button :
+                        buttons) {
+                    bottomPanel.add(button);
+                }
+                break;
+            case "Write words":
+                game.setGameDifficulty(new WrittenWordDifficulty());
+                bottomPanel.add(userAnswer);
+                break;
+            default:
+                game.setGameDifficulty(new TwoWordDifficulty());
+                buttons.add(new JButton("1"));
+                buttons.add(new JButton("2"));
+        }
+        while (iterator.hasNext()) {
+            Question tempQuestion = new Question();
+            Word word = iterator.next();
+            List<Word> answerWords = game.getGameDifficulty().getAnswerWords(word, editorDB, game.getLanguageState());
+            tempQuestion.setWordToTranslate(word);
+            tempQuestion.setAnwswers(answerWords);
+            questions.add(tempQuestion);
+            // TODO Ogranicz dodatkowo zeby nie bylo wiecej niz maxWords
         }
 
+
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setResizable(false);
+        frame.setLocation(10, 10);
+        frame.setLayout(new BorderLayout());
+        gamePanel.setLayout(new FlowLayout());
+        gamePanel.add(wordToTranslate);
+        wordToTranslate.setText("Word to translate:  " + questions.get(currentQuestionIndex).getWordToTranslate().getWord());
+
+        bottomPanel.setLayout(new GridLayout());
+
         frame.add(gamePanel, BorderLayout.NORTH);
-        JPanel spacingPanel = new JPanel();
         spacingPanel.setPreferredSize(new Dimension(300, 100));
         frame.add(spacingPanel, BorderLayout.CENTER);
         frame.add(bottomPanel, BorderLayout.SOUTH);

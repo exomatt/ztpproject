@@ -10,7 +10,6 @@ import java.util.List;
  * The type Word randomizer.
  */
 public class WordRandomizer {
-    //todo zeby sie nie powtarzalo ;)
 
     /**
      * Gets random words.

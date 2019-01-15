@@ -23,14 +23,9 @@ import java.util.List;
  * The type Main menu.
  */
 public class MainMenu {
-    /**
-     * The constant FILEDB.
-     */
-    public static final int FILEDB = 4;
-    /**
-     * The constant REPODB.
-     */
-    public static final int REPODB = 5;
+
+    private static final int FILEDB = 4;
+    private static final int REPODB = 5;
     private DatabaseEditor editorDB;
     private static final int LEARN = 0;
     private static final int TEST = 1;
@@ -181,7 +176,7 @@ public class MainMenu {
 
         JComboBox<String> languageComboBox = new JComboBox<>(new String[]{"Polish", "English"});
         gc.fill = GridBagConstraints.HORIZONTAL;
-        gc.gridwidth = 2;
+        gc.gridwidth = 3;
         gc.weightx = 0.5;
         gc.weighty = 0.1;
         gc.gridx = 0;
@@ -197,7 +192,6 @@ public class MainMenu {
         gc.gridy = 1;
         JScrollPane listScroll = new JScrollPane(list);
         frame.add(listScroll, gc);
-
         JPanel wordDetail = new JPanel();
         wordDetail.setLayout(new GridLayout(3, 2));
         JLabel wordLabel = new JLabel("Word:");
@@ -233,9 +227,11 @@ public class MainMenu {
         });
 
         gc.fill = GridBagConstraints.HORIZONTAL;
+        gc.weightx = 0.5;
         gc.gridx = 1;
         gc.gridy = 1;
         frame.add(wordDetail,gc);
+
 
         frame.pack();
         frame.setVisible(true);

@@ -417,68 +417,24 @@ public class MainMenu {
         Iterator<Word> iterator = game.getIterator();
         List<Question> questions = new ArrayList<>();
         final int[] currentQuestionIndex = {0};
-
         switch (diff) {
             case "2 words":
                 game.setGameDifficulty(new TwoWordDifficulty());
-                buttons.add(new JButton("1"));
-                buttons.add(new JButton("2"));
-                for (JButton button :
-                        buttons) {
-                    bottomPanel.add(button);
-                    button.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            if (button.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
-                                //TODO Jeżeli słowo z przycisku zgadza się to podbijamy indeks currentQuestionIndex i dajemy jakiś punkt czy coś
-                                currentQuestionIndex[0]++;
-
-                            }
-                        }
-                    });
-                }
                 break;
             case "3 words":
                 game.setGameDifficulty(new ThreeWordDifficulty());
-                buttons.add(new JButton("1"));
-                buttons.add(new JButton("2"));
-                buttons.add(new JButton("3"));
-                for (JButton button :
-                        buttons) {
-                    bottomPanel.add(button);
-                }
                 break;
             case "4 words":
                 game.setGameDifficulty(new FourWordDifficulty());
-                buttons.add(new JButton("1"));
-                buttons.add(new JButton("2"));
-                buttons.add(new JButton("3"));
-                buttons.add(new JButton("4"));
-                for (JButton button :
-                        buttons) {
-                    bottomPanel.add(button);
-                }
                 break;
             case "5 words":
                 game.setGameDifficulty(new FiveWordDifficulty());
-                buttons.add(new JButton("1"));
-                buttons.add(new JButton("2"));
-                buttons.add(new JButton("3"));
-                buttons.add(new JButton("4"));
-                buttons.add(new JButton("5"));
-                for (JButton button :
-                        buttons) {
-                    bottomPanel.add(button);
-                }
                 break;
             case "Write words":
                 game.setGameDifficulty(new WrittenWordDifficulty());
-                bottomPanel.add(userAnswer);
                 break;
             default:
                 game.setGameDifficulty(new TwoWordDifficulty());
-                buttons.add(new JButton("1"));
-                buttons.add(new JButton("2"));
         }
         while (iterator.hasNext()) {
             Question tempQuestion = new Question();
@@ -488,6 +444,41 @@ public class MainMenu {
             tempQuestion.setAnwswers(answerWords);
             questions.add(tempQuestion);
             // TODO Ogranicz dodatkowo zeby nie bylo wiecej niz maxWords
+        }
+        switch (diff) {
+            case "2 words":
+                buttons.add(new JButton(questions.get(currentQuestionIndex[0]).getAnwswers().get(0).getWord()));
+                buttons.add(new JButton(questions.get(currentQuestionIndex[0]).getAnwswers().get(1).getWord()));
+                for (JButton button :
+                        buttons) {
+                    bottomPanel.add(button);
+                    button.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            if (button.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
+                                //TODO Jeżeli słowo z przycisku zgadza się to podbijamy indeks currentQuestionIndex i dajemy jakiś punkt czy coś
+                                currentQuestionIndex[0]++;
+                                updateUI(buttons, wordToTranslate, questions, currentQuestionIndex[0]);
+
+                            }
+                        }
+                    });
+                }
+                break;
+            case "3 words":
+//                game.setGameDifficulty(new ThreeWordDifficulty());
+                break;
+            case "4 words":
+//                game.setGameDifficulty(new FourWordDifficulty());
+                break;
+            case "5 words":
+//                game.setGameDifficulty(new FiveWordDifficulty());
+                break;
+            case "Write words":
+//                game.setGameDifficulty(new WrittenWordDifficulty());
+                break;
+            default:
+//                game.setGameDifficulty(new TwoWordDifficulty());
         }
 
 
@@ -508,6 +499,13 @@ public class MainMenu {
         frame.pack();
         frame.setVisible(true);
 
+    }
+
+    private void updateUI(List<JButton> buttons, JLabel wordToTranslate, List<Question> questions, int currentQuestionIndex) {
+        for (int i = 0; i < buttons.size(); i++) {
+            buttons.get(i).setText(questions.get(currentQuestionIndex).getAnwswers().get(i).getWord());
+        }
+        wordToTranslate.setText("Word to translate:  " + questions.get(currentQuestionIndex).getWordToTranslate().getWord());
     }
 
 }

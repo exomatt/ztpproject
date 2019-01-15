@@ -23,6 +23,9 @@ public class LearningGame {
     private LanguageState languageState;
     private RaportBuilder raportBuilder;
     private Iterator<Word> iterator;
+    private int points = 0;
+    private boolean ifTest;
+
 
     /**
      * Create iterator.
@@ -36,6 +39,11 @@ public class LearningGame {
         } else {
             iterator = new AlphabetIterator(questions, number);
         }
+    }
+
+
+    public void incrementPoint() {
+        points++;
     }
 
 

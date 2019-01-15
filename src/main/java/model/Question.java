@@ -8,5 +8,5 @@ import java.util.List;
 public class Question {
     private Word wordToTranslate;
     private List<Word> anwswers;
-    private Word pickByUser;
+    private String pickByUser;
 }

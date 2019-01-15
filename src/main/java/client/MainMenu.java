@@ -4,7 +4,6 @@ import database.DatabaseEditor;
 import database.DatabaseRepository;
 import database.FileDatabase;
 import game.LearningGame;
-import game.TestGame;
 import model.Question;
 import model.Word;
 import state.ForeignPolishState;
@@ -382,10 +381,11 @@ public class MainMenu {
         int maxWords = value;
         editorDB = new DatabaseEditor();
         LearningGame game;
+        game = new LearningGame();
         if (gameType == LEARN) {
-            game = new LearningGame();
+            game.setIfTest(false);
         } else {
-            game = new TestGame();
+            game.setIfTest(true);
         }
         LanguageState languageState;
         if (repo == FILEDB) {
@@ -443,28 +443,27 @@ public class MainMenu {
             tempQuestion.setWordToTranslate(word);
             tempQuestion.setAnwswers(answerWords);
             questions.add(tempQuestion);
-            // TODO Ogranicz dodatkowo zeby nie bylo wiecej niz maxWords
         }
         switch (diff) {
             case "2 words":
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 2);
-                setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex);
+                setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
             case "3 words":
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 3);
-                setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex);
+                setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
             case "4 words"
                     :
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 4);
-                setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex);
+                setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
             case "5 words":
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 5);
-                setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex);
+                setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
             case "Write words":
-                setupTextField(frame, bottomPanel, userAnswer, wordToTranslate, maxWords, questions, currentQuestionIndex);
+                setupTextField(frame, bottomPanel, userAnswer, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
         }
 
@@ -494,45 +493,68 @@ public class MainMenu {
         }
     }
 
-    private void setupTextField(JFrame frame, JPanel bottomPanel, JTextField userAnswer, JLabel wordToTranslate, int maxWords, List<Question> questions, int[] currentQuestionIndex) {
+    private void setupTextField(JFrame frame, JPanel bottomPanel, JTextField userAnswer, JLabel wordToTranslate, int maxWords, List<Question> questions, int[] currentQuestionIndex, LearningGame game) {
         bottomPanel.add(userAnswer);
         userAnswer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (userAnswer.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
-                    currentQuestionIndex[0]++;
+                if (game.isIfTest()) {
+                    checkIfCorrectAnswer(userAnswer.getText(), questions, currentQuestionIndex, game);
                     userAnswer.setText("");
-                    if (currentQuestionIndex[0] == maxWords) {
-                        resultPopup();
-                        frame.dispose();
-                    } else {
-                        wordToTranslate.setText("Word to translate:  " + questions.get(currentQuestionIndex[0]).getWordToTranslate().getWord());
+
+                } else {
+                    if (userAnswer.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
+                        questions.get(currentQuestionIndex[0]).setPickByUser(userAnswer.getText());
+                        currentQuestionIndex[0]++;
+                        userAnswer.setText("");
+
                     }
+                }
+                if (currentQuestionIndex[0] == maxWords) {
+                    resultPopup();
+                    frame.dispose();
+                } else {
+                    wordToTranslate.setText("Word to translate:  " + questions.get(currentQuestionIndex[0]).getWordToTranslate().getWord());
                 }
             }
         });
     }
 
-    private void setupButtons(JFrame frame, JPanel bottomPanel, List<JButton> buttons, JLabel wordToTranslate, int maxWords, List<Question> questions, int[] currentQuestionIndex) {
+    private void setupButtons(JFrame frame, JPanel bottomPanel, List<JButton> buttons, JLabel wordToTranslate, int maxWords, List<Question> questions, int[] currentQuestionIndex, LearningGame game) {
         for (JButton button :
                 buttons) {
             bottomPanel.add(button);
             button.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    if (button.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
-                        //TODO Jeżeli słowo z przycisku zgadza się to podbijamy indeks currentQuestionIndex i dajemy jakiś punkt czy coś
-                        currentQuestionIndex[0]++;
-                        if (currentQuestionIndex[0] == maxWords) {
-                            resultPopup();
-                            frame.dispose();
-                        } else {
-                            updateUI(buttons, wordToTranslate, questions, currentQuestionIndex[0]);
+                    if (game.isIfTest()) {
+                        checkIfCorrectAnswer(button.getText(), questions, currentQuestionIndex, game);
+
+                    } else {
+                        if (button.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
+                            //TODO Jeżeli słowo z przycisku zgadza się to podbijamy indeks currentQuestionIndex i dajemy jakiś punkt czy coś
+                            questions.get(currentQuestionIndex[0]).setPickByUser(button.getText());
+                            currentQuestionIndex[0]++;
                         }
+                    }
+                    if (currentQuestionIndex[0] == maxWords) {
+                        resultPopup();
+                        frame.dispose();
+                    } else {
+                        updateUI(buttons, wordToTranslate, questions, currentQuestionIndex[0]);
                     }
                 }
             });
         }
+    }
+
+    private void checkIfCorrectAnswer(String text, List<Question> questions, int[] currentQuestionIndex, LearningGame game) {
+        String textFromAnswer = text;
+        questions.get(currentQuestionIndex[0]).setPickByUser(textFromAnswer);
+        if (textFromAnswer.equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
+            game.incrementPoint();
+        }
+        currentQuestionIndex[0]++;
     }
 
     private void resultPopup() {

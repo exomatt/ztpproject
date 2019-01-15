@@ -229,8 +229,6 @@ public class MainMenu {
                 wordField.setText(current.getWord());
                 translationField.setText(current.getTranslation().getWord());
                 languageField.setText(current.getLanguage());
-                wordField.setEditable(true);
-                translationField.setEditable(true);
             }
         });
 

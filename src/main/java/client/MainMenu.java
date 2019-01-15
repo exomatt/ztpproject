@@ -272,6 +272,10 @@ public class MainMenu {
     private void createWordPopup(Word current) {
         JTextField wordField = new JTextField();
         JTextField translationField = new JTextField();
+        JComboBox<String> languageWordComboBox = new JComboBox<>();
+        if (current == null) {
+            languageWordComboBox = new JComboBox<>(new String[]{"pl", "eng"});
+        }
         if (current != null) {
             wordField.setText(current.getWord());
             translationField.setText(current.getTranslation().getWord());
@@ -283,7 +287,7 @@ public class MainMenu {
         inputs.add(translationField);
         if (current == null) {
             inputs.add(new JLabel("Word language"));
-            inputs.add(new JComboBox<>(new String[]{"pl", "eng"}));
+            inputs.add(languageWordComboBox);
         }
         int result = JOptionPane.showConfirmDialog(null, inputs.toArray(), "New word", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {

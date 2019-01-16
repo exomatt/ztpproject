@@ -17,8 +17,8 @@ import state.LanguageState;
 import state.PolishForeignState;
 import strategy.*;
 
-import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -26,8 +26,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * The type Main menu.
@@ -393,6 +393,9 @@ class MainMenu implements Observer {
         game.setLanguageState(languageState);
         game.setWordList(editorDB.findByLanguage(languageState.getLanguage()));
 
+        if (game.getWordList() == null) {
+            return;
+        }
         int sizeOfDBWords = game.getWordList().size();
 
         if (value > sizeOfDBWords) {

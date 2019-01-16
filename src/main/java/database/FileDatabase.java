@@ -3,11 +3,14 @@ package database;
 import lombok.extern.java.Log;
 import model.Word;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +39,8 @@ public class FileDatabase implements DatabaseEditorAdapter {
             Files.write(Paths.get(filePath), String.join("\n", wordList).getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             log.severe("Problem with DB file:" + e.toString());
+            JOptionPane.showMessageDialog(new JFrame(), "Problem with saving file database", "Dialog",
+                    JOptionPane.ERROR_MESSAGE);
         }
 
     }
@@ -58,6 +63,8 @@ public class FileDatabase implements DatabaseEditorAdapter {
             }
             Files.write(Paths.get(filePath), String.join("\n", toSave).getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
+            JOptionPane.showMessageDialog(new JFrame(), "Problem with saving file database", "Dialog",
+                    JOptionPane.ERROR_MESSAGE);
             log.severe("Problem with DB file:" + e.toString());
         }
     }
@@ -78,7 +85,7 @@ public class FileDatabase implements DatabaseEditorAdapter {
             List<String> wordList = Files.readAllLines(Paths.get(filePath));
             if (wordList.isEmpty()) {
                 log.info("List is emvpty ");
-                return null;
+                return Collections.emptyList();
             }
             for (String wordInList : wordList) {
                 String[] split = wordInList.split(",");
@@ -94,8 +101,10 @@ public class FileDatabase implements DatabaseEditorAdapter {
                 result.add(word1);
             }
         } catch (IOException e) {
-            log.severe("Problem with DB file:" + e.toString());
-            return null;
+            log.severe("Problem with DB file:" + e.toString() + " " + Arrays.toString(e.getStackTrace()));
+            JOptionPane.showMessageDialog(new JFrame(), "Problem with file database", "Dialog",
+                    JOptionPane.ERROR_MESSAGE);
+            return Collections.emptyList();
         }
         return result;
     }

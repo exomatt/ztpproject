@@ -10,14 +10,8 @@ import java.util.*;
  */
 @Log
 public class AlphabetIterator implements Iterator<Word> {
-    /**
-     * The Word list.
-     */
-    List<Word> wordList = new ArrayList<>();
-    /**
-     * The Position.
-     */
-    int position;
+    private List<Word> wordList = new ArrayList<>();
+    private int position;
 
     /**
      * Instantiates a new Alphabet iterator.

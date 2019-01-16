@@ -11,14 +11,8 @@ import java.util.List;
  * The type Random iterator.
  */
 public class RandomIterator implements Iterator<Word> {
-    /**
-     * The Word list.
-     */
-    List<Word> wordList = new ArrayList<>();
-    /**
-     * The Position.
-     */
-    int position;
+    private List<Word> wordList = new ArrayList<>();
+    private int position;
 
     /**
      * Instantiates a new Random iterator.

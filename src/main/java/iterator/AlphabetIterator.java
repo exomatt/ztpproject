@@ -35,7 +35,7 @@ public class AlphabetIterator implements Iterator<Word> {
         }
         Collections.shuffle(listFromDB);
         for (int i = 0; i < number; i++) {
-            wordList.add(listFromDB.get(i));
+            wordList.add(listFromDB.get(i)); //todo - tu cos wywala nullpointera jak po starcie programu wybbierzesz alfabetyczny iterator
         }
         Collections.sort(wordList, Comparator.comparing(Word::getWord));
     }

@@ -529,9 +529,8 @@ class MainMenu {
     }
 
     private void checkIfCorrectAnswer(String text, List<Question> questions, int[] currentQuestionIndex, LearningGame game) {
-        String textFromAnswer = text;
-        questions.get(currentQuestionIndex[0]).setPickByUser(textFromAnswer);
-        if (textFromAnswer.equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
+        questions.get(currentQuestionIndex[0]).setPickByUser(text);
+        if (text.equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
             game.incrementPoint();
         }
         currentQuestionIndex[0]++;

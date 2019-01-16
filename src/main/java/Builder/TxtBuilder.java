@@ -3,6 +3,7 @@ package Builder;
 import model.Word;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
@@ -69,7 +70,9 @@ public class TxtBuilder implements RaportBuilder {
         }
         IntSummaryStatistics stat = Arrays.stream(sizes).summaryStatistics();
         int maxSize = stat.getMax();
-        String resultPath = "results/results.txt";
+        File resultPath = new File("results/results.txt");
+        if (!resultPath.getParentFile().exists())
+            resultPath.getParentFile().mkdirs();
         fileWriter = new FileWriter(resultPath);
         bufferedWriter = new BufferedWriter(fileWriter);
         for (int i = 0; i < maxSize; i++) {
@@ -84,6 +87,6 @@ public class TxtBuilder implements RaportBuilder {
         }
         bufferedWriter.close();
         fileWriter.close();
-        return "Path has been saved to " + resultPath;
+        return "Path has been saved to " + resultPath.getAbsolutePath();
     }
 }

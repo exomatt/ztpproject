@@ -17,7 +17,7 @@ import state.ForeignPolishState;
 import state.LanguageState;
 import state.PolishForeignState;
 import strategy.*;
-import utils.TimeCounter;
+import utilities.TimeCounter;
 
 import javax.swing.Timer;
 import javax.swing.*;
@@ -497,7 +497,7 @@ class MainMenu implements Observer {
 //        });
         ObservableUser listener = new ObservableUser(timeLabel);
         listener.addObserver(this);
-        Timer timer = new Timer(100, listener);
+        Timer timer = new Timer(1000, listener);
         timer.setInitialDelay(0);
         timer.start();
         switch (diff) {
@@ -509,8 +509,7 @@ class MainMenu implements Observer {
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 3);
                 setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
-            case "4 words"
-                    :
+            case "4 words":
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 4);
                 setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;

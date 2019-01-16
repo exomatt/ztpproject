@@ -51,6 +51,6 @@ public class ObservableUser extends Observable implements ActionListener {
         } else {
             elapsedSeconds--;
         }
-        timeLabel.setText("Time elapsed: " + seconds);
+        timeLabel.setText("Time elapsed: " + elapsedSeconds);
     }
 }

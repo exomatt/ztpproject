@@ -1,4 +1,4 @@
-package utils;
+package utilities;
 
 public class TimeCounter {
 

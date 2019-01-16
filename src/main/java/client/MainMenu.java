@@ -9,7 +9,6 @@ import database.DatabaseRepository;
 import database.FileDatabase;
 import game.LearningGame;
 import memento.GameMemento;
-import memento.GameToSave;
 import model.Question;
 import model.Word;
 import observer.ObservableUser;
@@ -18,8 +17,8 @@ import state.LanguageState;
 import state.PolishForeignState;
 import strategy.*;
 
-import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,8 +29,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * The type Main menu.
@@ -440,21 +439,31 @@ class MainMenu implements Observer {
             questions.add(tempQuestion);
         }
 
-        createGameWindow(questions, diff, value, game.isIfTest(), 0);
+        createGameWindow(questions, diff, value, game.isIfTest(), 0, game);
     }
 
     private void createGameWindowFromContinue() {
         memento = readMemento();
-        createGameWindow(memento.getGameState().getQuestions(),
-                memento.getGameState().getDifficulty(),
-                memento.getGameState().getMaxValue(),
-                memento.getGameState().isIfTest(),
-                memento.getGameState().getLastQuestionIndex());
+        LearningGame game = new LearningGame();
+        game.setMemento(memento);
+//        createGameWindow(memento.getGameState().getQuestions(),
+//                memento.getGameState().getDifficulty(),
+//                memento.getGameState().getMaxValue(),
+//                memento.getGameState().isIfTest(),
+//                memento.getGameState().getLastQuestionIndex(),
+//                null);
+        createGameWindow(game.getQuestions(),
+                game.getDiff(),
+                game.getMaxValue(),
+                game.isIfTest(),
+                game.getLastQuestionIndex(),
+                game
+        );
         removeMemento();
     }
 
     /////////// CREATE GAME WINDOW
-    private void createGameWindow(List<Question> questions, String diff, int maxWords, boolean game, int index) {
+    private void createGameWindow(List<Question> questions, String diff, int maxWords, boolean game, int index, LearningGame learningGame) {
         JFrame frame = new JFrame("Game");
         int[] currentQuestionIndex = {index};
         frame.addWindowListener(new WindowAdapter() {
@@ -463,14 +472,19 @@ class MainMenu implements Observer {
                 super.windowClosing(e);
                 int result = JOptionPane.showConfirmDialog(null, "Would you like to save?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (result == JOptionPane.YES_OPTION) {
-                    memento = new GameMemento();
-                    GameToSave gameState = new GameToSave();
-                    gameState.setQuestions(questions);
-                    gameState.setDifficulty(diff);
-                    gameState.setIfTest(game);
-                    gameState.setLastQuestionIndex(currentQuestionIndex[0]);
-                    gameState.setMaxValue(maxWords);
-                    memento.setGameState(gameState);
+                    learningGame.setQuestions(questions);
+                    learningGame.setMaxValue(maxWords);
+                    learningGame.setLastQuestionIndex(currentQuestionIndex[0]);
+                    learningGame.setDiff(diff);
+                    memento = learningGame.createMemento();
+//                    memento = new GameMemento();
+//                    GameToSave gameState = new GameToSave();
+//                    gameState.setQuestions(questions);
+//                    gameState.setDifficulty(diff);
+//                    gameState.setIfTest(game);
+//                    gameState.setLastQuestionIndex(currentQuestionIndex[0]);
+//                    gameState.setMaxValue(maxWords);
+//                    memento.setGameState(gameState);
                     addMemento(memento);
                     System.exit(0);
                 } else {
@@ -496,7 +510,7 @@ class MainMenu implements Observer {
         if (game) {
             ObservableUser listener = new ObservableUser(timeLabel, maxWords);
             listener.addObserver(this);
-            Timer timer = new Timer(100, listener);
+            Timer timer = new Timer(1000, listener);
             timer.setInitialDelay(0);
             timer.start();
         }

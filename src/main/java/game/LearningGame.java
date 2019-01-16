@@ -31,6 +31,7 @@ public class LearningGame {
     private int lastQuestionIndex;
     private List<Question> questions;
     private int maxValue;
+    private String diff;
     /**
      * Create iterator.
      *
@@ -50,14 +51,14 @@ public class LearningGame {
         points++;
     }
 
-    public GameMemento createMemento(String difficulty) {
+    public GameMemento createMemento() {
         GameMemento gameState = new GameMemento();
         GameToSave gameToSave = new GameToSave();
         gameToSave.setIfTest(ifTest);
         gameToSave.setMaxValue(maxValue);
         gameToSave.setQuestions(questions);
         gameToSave.setLastQuestionIndex(lastQuestionIndex);
-        gameToSave.setDifficulty(difficulty);
+        gameToSave.setDifficulty(diff);
         gameState.setGameState(gameToSave);
         return gameState;
     }
@@ -67,6 +68,7 @@ public class LearningGame {
         questions = gameState.getQuestions();
         ifTest = gameState.isIfTest();
         maxValue = gameState.getMaxValue();
+        diff = gameState.getDifficulty();
         lastQuestionIndex = gameState.getLastQuestionIndex();
         switch (gameState.getDifficulty()) {
             case "2 words":

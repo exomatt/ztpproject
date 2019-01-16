@@ -34,7 +34,7 @@ public class ObservableUser extends Observable implements ActionListener {
      */
     public ObservableUser(JLabel timeLabel, int numberOfWords) {
         this.timeLabel = timeLabel;
-        timeAmount = 5 * numberOfWords;
+        timeAmount = 20 * numberOfWords;
         elapsedSeconds = timeAmount;
     }
 

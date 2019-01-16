@@ -18,8 +18,8 @@ import state.LanguageState;
 import state.PolishForeignState;
 import strategy.*;
 
-import javax.swing.Timer;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -27,8 +27,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 /**
  * The type Main menu.
@@ -124,7 +124,7 @@ class MainMenu implements Observer {
                             difficultyComboBox,
                             new JLabel("Questions sorted randomly or alphabetically"),
                             iteratorComboBox,
-                            new JLabel("How many wordList?"),
+                            new JLabel("How many words?"),
                             amountLabel,
                             questionsAmountSlider
                     };

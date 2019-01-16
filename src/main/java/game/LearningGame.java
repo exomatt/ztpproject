@@ -26,7 +26,6 @@ public class LearningGame {
     private LanguageState languageState;
     private RaportBuilder raportBuilder;
     private Iterator<Word> iterator;
-    private int points = 0;
     private boolean ifTest;
     private int lastQuestionIndex;
     private List<Question> questions;
@@ -44,11 +43,6 @@ public class LearningGame {
         } else {
             iterator = new AlphabetIterator(wordList, number);
         }
-    }
-
-
-    public void incrementPoint() {
-        points++;
     }
 
     public GameMemento createMemento() {

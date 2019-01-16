@@ -3,7 +3,6 @@ package client;
 import model.Word;
 
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,14 +11,6 @@ import java.util.List;
 public class CustomListModel extends AbstractListModel {
 
     private List<Word> arrayList;
-
-    /**
-     * Instantiates a new Custom list model.
-     */
-    public CustomListModel() {
-        this.arrayList = new ArrayList<>();
-    }
-
     /**
      * Instantiates a new Custom list model.
      *
@@ -38,17 +29,6 @@ public class CustomListModel extends AbstractListModel {
         arrayList.add(word);
         fireIntervalAdded(arrayList, arrayList.indexOf(word), arrayList.indexOf(word));
     }
-
-    /**
-     * Remove.
-     *
-     * @param idx the idx
-     */
-    public void remove(int idx) {
-        arrayList.remove(idx);
-        fireIntervalRemoved(arrayList, idx, idx);
-    }
-
     public int getSize() {
         return arrayList.size();
     }

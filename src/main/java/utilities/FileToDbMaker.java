@@ -7,7 +7,15 @@ import model.Word;
 
 import java.util.List;
 
+/**
+ * The type File to db maker.
+ */
 public class FileToDbMaker {
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
         DatabaseEditor editorFile = new DatabaseEditor();
         DatabaseEditor editorDB = new DatabaseEditor();

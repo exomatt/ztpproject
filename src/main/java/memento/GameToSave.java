@@ -1,19 +1,19 @@
 package memento;
 
 import lombok.Data;
-import model.Word;
-import state.LanguageState;
-import strategy.Difficulty;
+import model.Question;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * The type Game to save.
  */
 @Data
-public class GameToSave {
-    private List<Word> questions;
-    private Difficulty difficulty;
-    private LanguageState state;
+public class GameToSave implements Serializable {
+    private List<Question> questions;
+    private int lastQuestionIndex;
+    private String difficulty;
+    private boolean ifTest;
 
 }

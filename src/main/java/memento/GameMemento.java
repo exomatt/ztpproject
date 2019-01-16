@@ -1,7 +1,14 @@
 package memento;
 
+import lombok.Data;
+
+import java.io.Serializable;
+
 /**
  * The type Game memento.
  */
-public class GameMemento {
+@Data
+public class GameMemento implements Serializable {
+    private GameToSave gameState;
+
 }

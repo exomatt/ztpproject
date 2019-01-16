@@ -9,6 +9,7 @@ import database.DatabaseEditor;
 import database.DatabaseRepository;
 import database.FileDatabase;
 import game.LearningGame;
+import memento.GameMemento;
 import model.Question;
 import model.Word;
 import state.ForeignPolishState;
@@ -16,15 +17,18 @@ import state.LanguageState;
 import state.PolishForeignState;
 import strategy.*;
 
-import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * The type Main menu.
@@ -44,6 +48,7 @@ class MainMenu {
     private JList list;
     private List<Word> words;
     private JComboBox<String> languageComboBox;
+    private GameMemento memento;
 
     /**
      * Instantiates a new Main menu.
@@ -92,13 +97,13 @@ class MainMenu {
 
                     JComboBox<String> difficultyComboBox = new JComboBox<>(new String[]{"2 words", "3 words", "4 words", "5 words", "Write words"});
                     JComboBox<String> iteratorComboBox = new JComboBox<>(new String[]{"Random", "Alphabet"});
-            JSlider questionsAmountSlider = new JSlider(MIN_QUESTIONS, MAX_QUESTIONS);
-            JLabel amountLabel = new JLabel(String.valueOf(questionsAmountSlider.getValue()));
-            questionsAmountSlider.setMajorTickSpacing(5);
-            questionsAmountSlider.setMinorTickSpacing(1);
-            questionsAmountSlider.setPaintTicks(true);
-            questionsAmountSlider.addChangeListener(e1 -> amountLabel.setText(String.valueOf(questionsAmountSlider.getValue())));
-            final JComponent[] inputs = new JComponent[]{
+                    JSlider questionsAmountSlider = new JSlider(MIN_QUESTIONS, MAX_QUESTIONS);
+                    JLabel amountLabel = new JLabel(String.valueOf(questionsAmountSlider.getValue()));
+                    questionsAmountSlider.setMajorTickSpacing(5);
+                    questionsAmountSlider.setMinorTickSpacing(1);
+                    questionsAmountSlider.setPaintTicks(true);
+                    questionsAmountSlider.addChangeListener(e1 -> amountLabel.setText(String.valueOf(questionsAmountSlider.getValue())));
+                    final JComponent[] inputs = new JComponent[]{
                             new JLabel("Choose your languages"),
                             polEngRadioButton,
                             engPolRadioButton,
@@ -111,10 +116,10 @@ class MainMenu {
                             new JLabel("Choose your difficulty"),
                             difficultyComboBox,
                             new JLabel("Questions sorted randomly or alphabetically"),
-                    iteratorComboBox,
-                    new JLabel("How many questions?"),
-                    amountLabel,
-                    questionsAmountSlider
+                            iteratorComboBox,
+                            new JLabel("How many wordList?"),
+                            amountLabel,
+                            questionsAmountSlider
                     };
                     int result = JOptionPane.showConfirmDialog(null, inputs, "New game options", JOptionPane.OK_CANCEL_OPTION);
                     if (result == JOptionPane.OK_OPTION) {
@@ -402,12 +407,12 @@ class MainMenu {
             languageState = new ForeignPolishState();
         }
         game.setLanguageState(languageState);
-        game.setQuestions(editorDB.findByLanguage(languageState.getLanguage()));
+        game.setWordList(editorDB.findByLanguage(languageState.getLanguage()));
 
-        int sizeOfDBWords = game.getQuestions().size();
+        int sizeOfDBWords = game.getWordList().size();
 
         if (value > sizeOfDBWords) {
-            JOptionPane.showMessageDialog(mainframe, "There are not enough words in your database, you have " + editorDB.getAllWords().size() + "questions");
+            JOptionPane.showMessageDialog(mainframe, "There are not enough words in your database, you have " + editorDB.getAllWords().size() + "wordList");
             maxWords = sizeOfDBWords;
         }
         if (iterType.equals("Random")) {
@@ -603,4 +608,40 @@ class MainMenu {
         wordToTranslate.setText("Word to translate:  " + questions.get(currentQuestionIndex).getWordToTranslate().getWord());
     }
 
+    private void addMemento(GameMemento gameMemento) {
+        memento = gameMemento;
+        try (
+                FileOutputStream fout = new FileOutputStream("save/memento.ser");
+                ObjectOutputStream oos = new ObjectOutputStream(fout);
+        ) {
+            oos.writeObject(memento);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    private GameMemento readMemento() {
+        GameMemento result = null;
+        try (
+                FileInputStream fin = new FileInputStream("save/memento.ser");
+                ObjectInputStream ois = new ObjectInputStream(fin);
+        ) {
+            result = (GameMemento) ois.readObject();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return result;
+    }
+
+    private void removeMemento() {
+        memento = null;
+        Path fileToDeletePath = Paths.get("save/memento.ser");
+
+        try {
+            Files.deleteIfExists(fileToDeletePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

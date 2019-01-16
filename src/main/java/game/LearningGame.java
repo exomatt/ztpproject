@@ -5,9 +5,12 @@ import iterator.AlphabetIterator;
 import iterator.RandomIterator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import memento.GameMemento;
+import memento.GameToSave;
+import model.Question;
 import model.Word;
 import state.LanguageState;
-import strategy.Difficulty;
+import strategy.*;
 
 import java.util.Iterator;
 import java.util.List;
@@ -18,14 +21,15 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class LearningGame {
-    private List<Word> questions;
+    private List<Word> wordList;
     private Difficulty gameDifficulty;
     private LanguageState languageState;
     private RaportBuilder raportBuilder;
     private Iterator<Word> iterator;
     private int points = 0;
     private boolean ifTest;
-
+    private int lastQuestionIndex;
+    private List<Question> questions;
 
     /**
      * Create iterator.
@@ -35,9 +39,9 @@ public class LearningGame {
      */
     public void createIterator(boolean mode, int number) {
         if (mode) {
-            iterator = new RandomIterator(questions, number);
+            iterator = new RandomIterator(wordList, number);
         } else {
-            iterator = new AlphabetIterator(questions, number);
+            iterator = new AlphabetIterator(wordList, number);
         }
     }
 
@@ -46,5 +50,42 @@ public class LearningGame {
         points++;
     }
 
+    public GameMemento createMemento(String difficulty) {
+        GameMemento gameState = new GameMemento();
+        GameToSave gameToSave = new GameToSave();
+        gameToSave.setIfTest(ifTest);
+        gameToSave.setQuestions(questions);
+        gameToSave.setLastQuestionIndex(lastQuestionIndex);
+        gameToSave.setDifficulty(difficulty);
+        gameState.setGameState(gameToSave);
+        return gameState;
+    }
+
+    public void setMemento(GameMemento memento) {
+        GameToSave gameState = memento.getGameState();
+        questions = gameState.getQuestions();
+        ifTest = gameState.isIfTest();
+        lastQuestionIndex = gameState.getLastQuestionIndex();
+        switch (gameState.getDifficulty()) {
+            case "2 words":
+                gameDifficulty = new TwoWordDifficulty();
+                break;
+            case "3 words":
+                gameDifficulty = new ThreeWordDifficulty();
+                break;
+            case "4 words":
+                gameDifficulty = new FourWordDifficulty();
+                break;
+            case "5 words":
+                gameDifficulty = new FiveWordDifficulty();
+                break;
+            case "Write words":
+                gameDifficulty = new WrittenWordDifficulty();
+                break;
+            default:
+                gameDifficulty = new TwoWordDifficulty();
+
+        }
+    }
 
 }

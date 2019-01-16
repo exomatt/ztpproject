@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * The type Word.
@@ -13,7 +14,7 @@ import javax.persistence.*;
 @Setter
 @Entity
 @AllArgsConstructor
-public class Word {
+public class Word implements Serializable {
     @Id
     @Column(name = "WORD", nullable = false)
     private String word;

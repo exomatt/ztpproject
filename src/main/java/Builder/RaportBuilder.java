@@ -13,26 +13,26 @@ public interface RaportBuilder {
      *
      * @param word the word
      */
-    public void addWordToTranslate(Word word);
+    void addWordToTranslate(Word word);
 
     /**
      * Add answers list.
      *
      * @param answers the answers
      */
-    public void addAnswersList(List<Word> answers);
+    void addAnswersList(List<Word> answers);
 
     /**
      * Add correct answer.
      *
      * @param correct the correct
      */
-    public void addCorrectAnswer(Word correct);
+    void addCorrectAnswer(Word correct);
 
     /**
      * Add user answer.
      *
      * @param userAnswer the user answer
      */
-    public void addUserAnswer(Word userAnswer);
+    void addUserAnswer(String userAnswer);
 }

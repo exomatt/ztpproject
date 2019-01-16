@@ -16,12 +16,7 @@ import state.PolishForeignState;
 import strategy.*;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -30,7 +25,7 @@ import java.util.List;
 /**
  * The type Main menu.
  */
-public class MainMenu {
+class MainMenu {
 
     private static final int MIN_QUESTIONS = 2;
     private static final int MAX_QUESTIONS = 25;
@@ -49,7 +44,7 @@ public class MainMenu {
     /**
      * Instantiates a new Main menu.
      */
-    public MainMenu() {
+    MainMenu() {
         mainframe = new JFrame("Learning languages");
         mainframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainframe.setResizable(false);
@@ -98,12 +93,7 @@ public class MainMenu {
             questionsAmountSlider.setMajorTickSpacing(5);
             questionsAmountSlider.setMinorTickSpacing(1);
             questionsAmountSlider.setPaintTicks(true);
-            questionsAmountSlider.addChangeListener(new ChangeListener() {
-                @Override
-                public void stateChanged(ChangeEvent e) {
-                    amountLabel.setText(String.valueOf(questionsAmountSlider.getValue()));
-                }
-            });
+            questionsAmountSlider.addChangeListener(e1 -> amountLabel.setText(String.valueOf(questionsAmountSlider.getValue())));
             final JComponent[] inputs = new JComponent[]{
                             new JLabel("Choose your languages"),
                             polEngRadioButton,
@@ -201,9 +191,7 @@ public class MainMenu {
         list = new JList(model);
 
         languageComboBox = new JComboBox<>(new String[]{"Polish", "English"});
-        languageComboBox.addItemListener(e -> {
-            setWordsByLanguage();
-        });
+        languageComboBox.addItemListener(e -> setWordsByLanguage());
         gc.weightx = 0.5;
         gc.gridwidth = 3;
         gc.gridx = 0;
@@ -235,27 +223,22 @@ public class MainMenu {
         JTextField languageField = new JTextField();
         wordDetail.add(languageField);
         languageField.setEditable(false);
-        list.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (list.isSelectionEmpty()) {
-                    return;
-                }
-                Word current = getCurrentWord(words, list);
-                wordField.setText(current.getWord());
-                translationField.setText(current.getTranslation().getWord());
-                languageField.setText(current.getLanguage());
-                editWordButton.setEnabled(true);
-                removeWordButton.setEnabled(true);
+        list.addListSelectionListener(e -> {
+            if (list.isSelectionEmpty()) {
+                return;
             }
+            Word current = getCurrentWord(words, list);
+            wordField.setText(current.getWord());
+            translationField.setText(current.getTranslation().getWord());
+            languageField.setText(current.getLanguage());
+            editWordButton.setEnabled(true);
+            removeWordButton.setEnabled(true);
         });
         gc.gridx = 1;
 
         JPanel buttonsPanel = new JPanel();
         JButton addWordButton = new JButton("Add");
-        addWordButton.addActionListener(e -> {
-            createWordPopup();
-        });
+        addWordButton.addActionListener(e -> createWordPopup());
         editWordButton.setEnabled(false);
         editWordButton.addActionListener(e -> {
             Word current = getCurrentWord(words, list);
@@ -512,7 +495,7 @@ public class MainMenu {
                 }
             }
             if (currentQuestionIndex[0] == maxWords) {
-                resultPopup(questions);
+                resultPopup(questions, game);
                 frame.dispose();
             } else {
                 wordToTranslate.setText("Word to translate:  " + questions.get(currentQuestionIndex[0]).getWordToTranslate().getWord());
@@ -536,7 +519,7 @@ public class MainMenu {
                     }
                 }
                 if (currentQuestionIndex[0] == maxWords) {
-                    resultPopup(questions);
+                    resultPopup(questions, game);
                     frame.dispose();
                 } else {
                     updateUI(buttons, wordToTranslate, questions, currentQuestionIndex[0]);
@@ -554,7 +537,7 @@ public class MainMenu {
         currentQuestionIndex[0]++;
     }
 
-    private void resultPopup(List<Question> questions) {
+    private void resultPopup(List<Question> questions, LearningGame game) {
         RaportBuilder builder = null;
         Object[] options = {"TXT", "PDF", "Don't save"};
         int n = JOptionPane.showOptionDialog(mainframe, "How would you like to save?", "Save your results", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
@@ -568,6 +551,9 @@ public class MainMenu {
                 builder.addWordToTranslate(q.getWordToTranslate());
                 builder.addAnswersList(q.getAnwswers());
                 builder.addCorrectAnswer(q.getWordToTranslate().getTranslation());
+                if (game.isIfTest()) {
+                    builder.addUserAnswer(q.getPickByUser());
+                }
             }
         }
         if (n == 0) {
@@ -579,7 +565,7 @@ public class MainMenu {
         } else if (n == 1) {
             try {
                 JOptionPane.showMessageDialog(mainframe, "Your file has been saved to " + ((PdfBuilder) builder).buildPdf());
-            } catch (FileNotFoundException | DocumentException e) {
+            } catch (DocumentException | IOException e) {
                 e.printStackTrace();
             }
         }

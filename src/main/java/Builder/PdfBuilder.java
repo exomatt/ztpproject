@@ -1,6 +1,7 @@
 package Builder;
 
 import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -9,6 +10,7 @@ import model.Word;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.IntSummaryStatistics;
 import java.util.LinkedList;
@@ -22,7 +24,7 @@ public class PdfBuilder implements RaportBuilder {
     private List<Word> wordsToTranslateList;
     private List<List<Word>> answersList;
     private List<Word> correctAnswers;
-    private List<Word> userAnswersList;
+    private List<String> userAnswersList;
 
     @Override
     public void addWordToTranslate(Word word) {
@@ -49,7 +51,7 @@ public class PdfBuilder implements RaportBuilder {
     }
 
     @Override
-    public void addUserAnswer(Word userAnswer) {
+    public void addUserAnswer(String userAnswer) {
         if (userAnswersList == null) {
             userAnswersList = new LinkedList<>();
         }
@@ -63,7 +65,7 @@ public class PdfBuilder implements RaportBuilder {
      * @throws FileNotFoundException the file not found exception
      * @throws DocumentException     the document exception
      */
-    public String buildPdf() throws FileNotFoundException, DocumentException {
+    public String buildPdf() throws IOException, DocumentException {
         int[] sizes;
         if (userAnswersList == null) {
             sizes = new int[]{wordsToTranslateList.size(), answersList.size(), correctAnswers.size()};
@@ -80,9 +82,10 @@ public class PdfBuilder implements RaportBuilder {
         PdfWriter.getInstance(document, new FileOutputStream(resultPath));
 
         document.open();
-        Font font = new Font(Font.FontFamily.COURIER, 16, Font.NORMAL);
-        Font correctAnswerF = new Font(Font.FontFamily.COURIER, 12, Font.BOLD);
-        Font answerF = new Font(Font.FontFamily.COURIER, 12, Font.NORMAL);
+        BaseFont baseFont = BaseFont.createFont("c:/windows/fonts/arial.ttf", BaseFont.CP1250, BaseFont.EMBEDDED);
+        Font font = new Font(baseFont, 16, Font.NORMAL);
+        Font correctAnswerF = new Font(baseFont, 12, Font.BOLD);
+        Font answerF = new Font(baseFont, 12, Font.NORMAL);
 
 
         for (int i = 0; i < maxSize; i++) {
@@ -94,8 +97,10 @@ public class PdfBuilder implements RaportBuilder {
                     cell.setBackgroundColor(BaseColor.GREEN);
                 }
                 if (userAnswersList != null) {
-                    if (answersList.get(i).get(j).equals(userAnswersList.get(i))) {
+                    if (answersList.get(i).get(j).getWord().equals(userAnswersList.get(i))) {
                         cell.setPhrase(new Phrase(answersList.get(i).get(j).getWord(), correctAnswerF));
+                    } else {
+                        cell.setPhrase(new Phrase(answersList.get(i).get(j).getWord(), answerF));
                     }
                 } else {
                     cell.setPhrase(new Phrase(answersList.get(i).get(j).getWord(), answerF));

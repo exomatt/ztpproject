@@ -18,7 +18,7 @@ public class TxtBuilder implements RaportBuilder {
     private List<Word> wordsToTranslateList;
     private List<List<Word>> answersList;
     private List<Word> correctAnswers;
-    private List<Word> userAnswersList;
+    private List<String> userAnswersList;
 
     @Override
     public void addWordToTranslate(Word word) {
@@ -45,7 +45,7 @@ public class TxtBuilder implements RaportBuilder {
     }
 
     @Override
-    public void addUserAnswer(Word userAnswer) {
+    public void addUserAnswer(String userAnswer) {
         if (userAnswersList == null) {
             userAnswersList = new LinkedList<>();
         }
@@ -59,8 +59,8 @@ public class TxtBuilder implements RaportBuilder {
      * @throws IOException the io exception
      */
     public String buildTxt() throws IOException {
-        BufferedWriter bufferedWriter = null;
-        FileWriter fileWriter = null;
+        BufferedWriter bufferedWriter;
+        FileWriter fileWriter;
         int[] sizes;
         if (userAnswersList == null) {
             sizes = new int[]{wordsToTranslateList.size(), answersList.size(), correctAnswers.size()};
@@ -79,7 +79,7 @@ public class TxtBuilder implements RaportBuilder {
             }
             bufferedWriter.write("Correct answer: " + correctAnswers.get(i).getWord() + "\n");
             if (userAnswersList != null) {
-                bufferedWriter.write("Users answer: " + userAnswersList.get(i).getWord() + "\n");
+                bufferedWriter.write("Users answer: " + userAnswersList.get(i) + "\n");
             }
         }
         bufferedWriter.close();

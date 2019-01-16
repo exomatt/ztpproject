@@ -493,11 +493,13 @@ class MainMenu implements Observer {
 //                timeLabel.setText("Time elapsed: " + format);
 //            }
 //        });
-        ObservableUser listener = new ObservableUser(timeLabel, maxWords);
-        listener.addObserver(this);
-        Timer timer = new Timer(100, listener);
-        timer.setInitialDelay(0);
-        timer.start();
+        if (game) {
+            ObservableUser listener = new ObservableUser(timeLabel, maxWords);
+            listener.addObserver(this);
+            Timer timer = new Timer(100, listener);
+            timer.setInitialDelay(0);
+            timer.start();
+        }
         switch (diff) {
             case "2 words":
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 2);
@@ -569,7 +571,8 @@ class MainMenu implements Observer {
                     questions.get(currentQuestionIndex[0]).setPickByUser(userAnswer.getText());
                     currentQuestionIndex[0]++;
                     userAnswer.setText("");
-
+                } else {
+                    JOptionPane.showMessageDialog(mainframe, "Wrong answer!! Try again!");
                 }
             }
             if (currentQuestionIndex[0] == maxWords) {
@@ -593,6 +596,8 @@ class MainMenu implements Observer {
                     if (button.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
                         questions.get(currentQuestionIndex[0]).setPickByUser(button.getText());
                         currentQuestionIndex[0]++;
+                    } else {
+                        JOptionPane.showMessageDialog(mainframe, "Wrong answer!! Try again!");
                     }
                 }
                 if (currentQuestionIndex[0] == maxWords) {

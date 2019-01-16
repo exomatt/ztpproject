@@ -16,5 +16,4 @@ public class GameToSave implements Serializable {
     private String difficulty;
     private boolean ifTest;
     private int maxValue;
-
 }

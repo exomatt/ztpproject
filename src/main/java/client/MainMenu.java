@@ -10,6 +10,7 @@ import database.DatabaseRepository;
 import database.FileDatabase;
 import game.LearningGame;
 import memento.GameMemento;
+import memento.GameToSave;
 import model.Question;
 import model.Word;
 import state.ForeignPolishState;
@@ -74,6 +75,12 @@ class MainMenu {
         mainframe.pack();
         mainframe.setVisible(true);
         continueButton.setEnabled(false);
+        continueButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createGameWindowFromContinue();
+            }
+        });
         if (new File("save/memento.ser").exists()) {
             continueButton.setEnabled(true);
         }
@@ -434,30 +441,42 @@ class MainMenu {
             questions.add(tempQuestion);
         }
 
-        createGameWindow(questions, diff, value, game);
+        createGameWindow(questions, diff, value, game.isIfTest(), 0);
     }
 
     private void createGameWindowFromContinue() {
         memento = readMemento();
-        //TODO Memento tutaj
-//        createGameWindow(memento.getGameState().getQuestions(),memento.getGameState().getDifficulty(),memento.getGameState().get);
-
+        createGameWindow(memento.getGameState().getQuestions(),
+                memento.getGameState().getDifficulty(),
+                memento.getGameState().getMaxValue(),
+                memento.getGameState().isIfTest(),
+                memento.getGameState().getLastQuestionIndex());
+        removeMemento();
     }
 
     /////////// CREATE GAME WINDOW
-//    private void createGameWindow(int gameType, int langState, int repo, String diff, String iterType, int value) {
-    private void createGameWindow(List<Question> questions, String diff, int maxWords, LearningGame game) {
+    private void createGameWindow(List<Question> questions, String diff, int maxWords, boolean game, int index) {
         TimeCounter tc = new TimeCounter();
         JFrame frame = new JFrame("Game");
+        int[] currentQuestionIndex = {index};
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
-                int result = JOptionPane.showConfirmDialog(null, "Are you sure", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                int result = JOptionPane.showConfirmDialog(null, "Would you like to save?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                 if (result == JOptionPane.YES_OPTION) {
+                    memento = new GameMemento();
+                    GameToSave gameState = new GameToSave();
+                    gameState.setQuestions(questions);
+                    gameState.setDifficulty(diff);
+                    gameState.setIfTest(game);
+                    gameState.setLastQuestionIndex(currentQuestionIndex[0]);
+                    gameState.setMaxValue(maxWords);
+                    memento.setGameState(gameState);
+                    addMemento(memento);
                     System.exit(0);
                 } else {
-                    //Do nothing
+                    frame.dispose();
                 }
             }
         });
@@ -478,73 +497,6 @@ class MainMenu {
         });
         timer.setInitialDelay(0);
         timer.start();
-        int[] currentQuestionIndex = {0};
-//        int maxWords = value;
-//        editorDB = new DatabaseEditor();
-//        LearningGame game;
-//        game = new LearningGame();
-//        if (gameType == LEARN) {
-//            game.setIfTest(false);
-//        } else {
-//            game.setIfTest(true);
-//        }
-//        LanguageState languageState;
-//        if (repo == FILEDB) {
-//            editorDB.setDatabase(new FileDatabase());
-//        } else {
-//            editorDB.setDatabase(new DatabaseRepository());
-//        }
-//
-//        if (langState == POLENG) {
-//            languageState = new PolishForeignState();
-//        } else {
-//            languageState = new ForeignPolishState();
-//        }
-//        game.setLanguageState(languageState);
-//        game.setQuestions(editorDB.findByLanguage(languageState.getLanguage()));
-//
-//        int sizeOfDBWords = game.getQuestions().size();
-//
-//        if (value > sizeOfDBWords) {
-//            JOptionPane.showMessageDialog(mainframe, "There are not enough words in your database, you have " + editorDB.getAllWords().size() + "questions");
-//            maxWords = sizeOfDBWords;
-//        }
-//        if (iterType.equals("Random")) {
-//            game.createIterator(true, maxWords);
-//        } else {
-//            game.createIterator(false, maxWords);
-//        }
-//
-//        Iterator<Word> iterator = game.getIterator();
-//        List<Question> questions = new ArrayList<>();
-//        final int[] currentQuestionIndex = {0};
-//        switch (diff) {
-//            case "2 words":
-//                game.setGameDifficulty(new TwoWordDifficulty());
-//                break;
-//            case "3 words":
-//                game.setGameDifficulty(new ThreeWordDifficulty());
-//                break;
-//            case "4 words":
-//                game.setGameDifficulty(new FourWordDifficulty());
-//                break;
-//            case "5 words":
-//                game.setGameDifficulty(new FiveWordDifficulty());
-//                break;
-//            case "Write words":
-//                game.setGameDifficulty(new WrittenWordDifficulty());
-//                break;
-//            default:
-//                game.setGameDifficulty(new TwoWordDifficulty());
-//        }
-//        while (iterator.hasNext()) {
-//            Question tempQuestion = new Question();
-//            Word word = iterator.next();
-//            List<Word> answerWords = game.getGameDifficulty().getAnswerWords(word, editorDB, game.getLanguageState());
-//            tempQuestion.setWordToTranslate(word);
-//            tempQuestion.setAnwswers(answerWords);
-//            questions.add(tempQuestion);
-//        }
         switch (diff) {
             case "2 words":
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 2);
@@ -604,14 +556,11 @@ class MainMenu {
         }
     }
 
-    private void setupTextField(JFrame frame, JPanel bottomPanel, JTextField userAnswer, JLabel wordToTranslate, int maxWords, List<Question> questions, int[] currentQuestionIndex, LearningGame game) {
+    private void setupTextField(JFrame frame, JPanel bottomPanel, JTextField userAnswer, JLabel wordToTranslate, int maxWords, List<Question> questions, int[] currentQuestionIndex, boolean game) {
         bottomPanel.add(userAnswer);
         userAnswer.addActionListener(e -> {
-            if (game.isIfTest()) {
-                //TODO Pozbadz sie jakos tego game'a zeby mozna bylo z memento bez problemu wczytac
-                checkIfCorrectAnswer(userAnswer.getText(), questions, currentQuestionIndex, game);
+            if (game) {
                 userAnswer.setText("");
-
             } else {
                 if (userAnswer.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
                     questions.get(currentQuestionIndex[0]).setPickByUser(userAnswer.getText());
@@ -629,21 +578,17 @@ class MainMenu {
         });
     }
 
-    private void setupButtons(JFrame frame, JPanel bottomPanel, List<JButton> buttons, JLabel wordToTranslate, int maxWords, List<Question> questions, int[] currentQuestionIndex, LearningGame game) {
+    private void setupButtons(JFrame frame, JPanel bottomPanel, List<JButton> buttons, JLabel wordToTranslate, int maxWords, List<Question> questions, int[] currentQuestionIndex, boolean game) {
         for (JButton button :
                 buttons) {
             bottomPanel.add(button);
             button.addActionListener(e -> {
-                if (game.isIfTest()) {
-                    checkIfCorrectAnswer(button.getText(), questions, currentQuestionIndex, game);
 
-                } else {
                     if (button.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
-                        //TODO Tutaj tez wywal tego game'a
                         questions.get(currentQuestionIndex[0]).setPickByUser(button.getText());
                         currentQuestionIndex[0]++;
                     }
-                }
+
                 if (currentQuestionIndex[0] == maxWords) {
                     resultPopup(questions, game);
                     frame.dispose();
@@ -654,15 +599,7 @@ class MainMenu {
         }
     }
 
-    private void checkIfCorrectAnswer(String text, List<Question> questions, int[] currentQuestionIndex, LearningGame game) {
-        questions.get(currentQuestionIndex[0]).setPickByUser(text);
-        if (text.equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
-            game.incrementPoint();
-        }
-        currentQuestionIndex[0]++;
-    }
-
-    private void resultPopup(List<Question> questions, LearningGame game) {
+    private void resultPopup(List<Question> questions, boolean game) {
         RaportBuilder builder = null;
         Object[] options = {"TXT", "PDF", "Don't save"};
         int n = JOptionPane.showOptionDialog(mainframe, "How would you like to save?", "Save your results", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
@@ -676,7 +613,7 @@ class MainMenu {
                 builder.addWordToTranslate(q.getWordToTranslate());
                 builder.addAnswersList(q.getAnwswers());
                 builder.addCorrectAnswer(q.getWordToTranslate().getTranslation());
-                if (game.isIfTest()) {
+                if (game) {
                     builder.addUserAnswer(q.getPickByUser());
                 }
             }
@@ -705,6 +642,10 @@ class MainMenu {
 
     private void addMemento(GameMemento gameMemento) {
         memento = gameMemento;
+        File resultpath = new File("save/memento.ser");
+        if (!resultpath.getParentFile().exists()) {
+            resultpath.getParentFile().mkdirs();
+        }
         try (
                 FileOutputStream fout = new FileOutputStream("save/memento.ser");
                 ObjectOutputStream oos = new ObjectOutputStream(fout);

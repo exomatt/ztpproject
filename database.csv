@@ -1,7 +1,6 @@
 grape,eng,winogrono,pl
 blackberry,eng,jeżyna,pl
 raspberry,eng,mailna,pl
-blackcurrant,eng,czarna pożeczka,pl
 lemon,eng,cytryna,pl
 pineapple,eng,ananas,pl
 grapefruit,eng,grejpfrut,pl
@@ -90,3 +89,4 @@ brown,eng,brązowy,pl
 blue,eng,niebieski,pl
 wiśnia,pl,cherry,eng
 desk,eng,biurko,pl
+czarnapożeczka,pl ,blackcurrant,eng

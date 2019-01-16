@@ -301,6 +301,7 @@ class MainMenu {
             languageWordComboBox = new JComboBox<>(new String[]{"pl", "eng"});
         }
         if (current != null) {
+            wordField.setEditable(false);
             wordField.setText(current.getWord());
             translationField.setText(current.getTranslation().getWord());
         }
@@ -315,7 +316,6 @@ class MainMenu {
         }
         int result = JOptionPane.showConfirmDialog(null, inputs.toArray(), "New word", JOptionPane.OK_CANCEL_OPTION);
         if (result == JOptionPane.OK_OPTION) {
-            //TODO zmiana by słowo nie było dostepne a tylko translakcja
             if (wordField.getText().replace(" ", "").isEmpty() || translationField.getText().replace(" ", "").isEmpty()) {
                 JOptionPane.showMessageDialog(null, "One of fields is empty!!!", "Error", JOptionPane.ERROR_MESSAGE);
                 return;

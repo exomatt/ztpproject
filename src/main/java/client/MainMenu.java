@@ -8,6 +8,7 @@ import database.DatabaseEditor;
 import database.DatabaseRepository;
 import database.FileDatabase;
 import game.LearningGame;
+import lombok.extern.java.Log;
 import memento.GameMemento;
 import model.Question;
 import model.Word;
@@ -32,6 +33,7 @@ import java.util.*;
 /**
  * The type Main menu.
  */
+@Log
 class MainMenu implements Observer {
 
     private static final int MIN_QUESTIONS = 2;
@@ -200,8 +202,15 @@ class MainMenu implements Observer {
         words = editorDB.findByLanguage("pl");
 
         if (words == null) {
-            JOptionPane.showMessageDialog(mainframe, "Problem with database file", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            try {
+                if (Files.exists(Paths.get("database.csv"))) {
+                    words = Collections.emptyList();
+                }
+                Files.createFile(Paths.get("database.csv"));
+            } catch (IOException e) {
+                log.severe("Problem with db" + e.getMessage() + " " + Arrays.toString(e.getStackTrace()));
+            }
+            words = Collections.emptyList();
         }
         CustomListModel model = new CustomListModel(words);
         list = new JList(model);

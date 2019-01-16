@@ -18,8 +18,8 @@ import state.LanguageState;
 import state.PolishForeignState;
 import strategy.*;
 
-import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,8 +30,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * The type Main menu.
@@ -679,5 +679,14 @@ class MainMenu {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private int countCorrectAnswers(List<Question> questions) {
+        int points = 0;
+        for (Question question : questions) {
+            if (question.getWordToTranslate().getTranslation().getWord().equals(question.getPickByUser()))
+                points++;
+        }
+        return points;
     }
 }

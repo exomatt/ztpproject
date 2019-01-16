@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 public class FileDatabase implements DatabaseEditorAdapter {
     private final String filePath = "database.csv";
 
-    //TODO Jak testowalem to trafila mi sie dwa razy ta sama odpowiedz, obie wlasciwe, sprawdz w MYSQLowej wersji i plikowej
     public void addWord(Word word) {
         try {
             List<String> wordList = Files.readAllLines(Paths.get(filePath));

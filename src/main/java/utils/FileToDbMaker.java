@@ -1,4 +1,4 @@
-package Utils;
+package utils;
 
 import database.DatabaseEditor;
 import database.DatabaseRepository;

@@ -3,10 +3,7 @@ package iterator;
 import lombok.extern.java.Log;
 import model.Word;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * The type Alphabet iterator.
@@ -16,7 +13,7 @@ public class AlphabetIterator implements Iterator<Word> {
     /**
      * The Word list.
      */
-    List<Word> wordList;
+    List<Word> wordList = new ArrayList<>();
     /**
      * The Position.
      */
@@ -35,7 +32,7 @@ public class AlphabetIterator implements Iterator<Word> {
         }
         Collections.shuffle(listFromDB);
         for (int i = 0; i < number; i++) {
-            wordList.add(listFromDB.get(i)); //todo - tu cos wywala nullpointera jak po starcie programu wybbierzesz alfabetyczny iterator
+            wordList.add(listFromDB.get(i));
         }
         Collections.sort(wordList, Comparator.comparing(Word::getWord));
     }

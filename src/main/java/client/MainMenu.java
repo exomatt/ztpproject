@@ -701,7 +701,7 @@ class MainMenu implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         // todo tu musi sie dziac
-        o.deleteObserver(this);
+        //o.deleteObserver(this);
         System.out.println("dostałem wiadomosc ");
 
     }

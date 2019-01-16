@@ -17,9 +17,12 @@ import java.util.Observer;
 @Data
 @NoArgsConstructor
 public class ObservableUser extends Observable implements ActionListener {
+
+    private static int TIME_AMOUNT = 5;
+
     private List<Observer> observers = new ArrayList<>();
     private JLabel timeLabel;
-    private int elapsedSeconds = 30;
+    private int elapsedSeconds = TIME_AMOUNT;
     private String seconds = Integer.toString(elapsedSeconds);
 
 
@@ -48,6 +51,7 @@ public class ObservableUser extends Observable implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (elapsedSeconds == 0) {
             notifyObservers();
+            elapsedSeconds = TIME_AMOUNT;
         } else {
             elapsedSeconds--;
         }

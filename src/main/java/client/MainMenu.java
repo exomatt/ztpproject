@@ -495,7 +495,7 @@ class MainMenu implements Observer {
 //                timeLabel.setText("Time elapsed: " + format);
 //            }
 //        });
-        ObservableUser listener = new ObservableUser(timeLabel);
+        ObservableUser listener = new ObservableUser(timeLabel, maxWords);
         listener.addObserver(this);
         Timer timer = new Timer(1000, listener);
         timer.setInitialDelay(0);

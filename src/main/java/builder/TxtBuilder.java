@@ -78,7 +78,7 @@ public class TxtBuilder implements RaportBuilder {
         for (int i = 0; i < maxSize; i++) {
             bufferedWriter.write("\nWord to translate: " + wordsToTranslateList.get(i).getWord() + "\n\n");
             for (int j = 0; j < answersList.get(i).size(); j++) {
-                bufferedWriter.write(String.valueOf(j) + ". " + answersList.get(i).get(j).getWord() + "\n\n");
+                bufferedWriter.write(String.valueOf(j + 1) + ". " + answersList.get(i).get(j).getWord() + "\n\n");
             }
             bufferedWriter.write("Correct answer: " + correctAnswers.get(i).getWord() + "\n");
             if (userAnswersList != null) {

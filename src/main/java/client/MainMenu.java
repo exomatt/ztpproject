@@ -17,18 +17,20 @@ import state.LanguageState;
 import state.PolishForeignState;
 import strategy.*;
 
-import javax.swing.Timer;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 /**
  * The type Main menu.
@@ -71,8 +73,10 @@ class MainMenu {
         mainframe.add(exitButton);
         mainframe.pack();
         mainframe.setVisible(true);
-
         continueButton.setEnabled(false);
+        if (new File("save/memento.ser").exists()) {
+            continueButton.setEnabled(true);
+        }
         startButton.addActionListener(e -> {
                     JRadioButton polEngRadioButton = new JRadioButton("Polish-English");
                     JRadioButton engPolRadioButton = new JRadioButton("English-Polish");
@@ -129,29 +133,29 @@ class MainMenu {
                         if (learnRadioButton.isSelected()) {
                             if (polEngRadioButton.isSelected()) {
                                 if (fileDatabaseRadioButton.isSelected()) {
-                                    createGameWindow(LEARN, POLENG, FILEDB, gameDifficulty, iterType, questionsAmount);   ///Learn, Polish-English, File Database
+                                    createGameWindowFromStart(LEARN, POLENG, FILEDB, gameDifficulty, iterType, questionsAmount);   ///Learn, Polish-English, File Database
                                 } else {
-                                    createGameWindow(LEARN, POLENG, REPODB, gameDifficulty, iterType, questionsAmount);   ///Learn, Polish-English, Repo Database
+                                    createGameWindowFromStart(LEARN, POLENG, REPODB, gameDifficulty, iterType, questionsAmount);   ///Learn, Polish-English, Repo Database
                                 }
                             } else {
                                 if (fileDatabaseRadioButton.isSelected()) {
-                                    createGameWindow(LEARN, ENGPOL, FILEDB, gameDifficulty, iterType, questionsAmount);   //Learn, English-Polish, File Database
+                                    createGameWindowFromStart(LEARN, ENGPOL, FILEDB, gameDifficulty, iterType, questionsAmount);   //Learn, English-Polish, File Database
                                 } else {
-                                    createGameWindow(LEARN, ENGPOL, REPODB, gameDifficulty, iterType, questionsAmount);   //Learn, English-Polish, Repo Database
+                                    createGameWindowFromStart(LEARN, ENGPOL, REPODB, gameDifficulty, iterType, questionsAmount);   //Learn, English-Polish, Repo Database
                                 }
                             }
                         } else {
                             if (polEngRadioButton.isSelected()) {
                                 if (fileDatabaseRadioButton.isSelected()) {
-                                    createGameWindow(TEST, POLENG, FILEDB, gameDifficulty, iterType, questionsAmount);   //Test, Polish-English, File Database
+                                    createGameWindowFromStart(TEST, POLENG, FILEDB, gameDifficulty, iterType, questionsAmount);   //Test, Polish-English, File Database
                                 } else {
-                                    createGameWindow(TEST, POLENG, REPODB, gameDifficulty, iterType, questionsAmount);   //Test, Polish-English, Repo Database
+                                    createGameWindowFromStart(TEST, POLENG, REPODB, gameDifficulty, iterType, questionsAmount);   //Test, Polish-English, Repo Database
                                 }
                             } else {
                                 if (fileDatabaseRadioButton.isSelected()) {
-                                    createGameWindow(TEST, ENGPOL, FILEDB, gameDifficulty, iterType, questionsAmount);   //Test, English-Polish, File Database
+                                    createGameWindowFromStart(TEST, ENGPOL, FILEDB, gameDifficulty, iterType, questionsAmount);   //Test, English-Polish, File Database
                                 } else {
-                                    createGameWindow(TEST, ENGPOL, REPODB, gameDifficulty, iterType, questionsAmount);   //Test, English-Polish, Repo Database
+                                    createGameWindowFromStart(TEST, ENGPOL, REPODB, gameDifficulty, iterType, questionsAmount);   //Test, English-Polish, Repo Database
                                 }
                             }
                         }
@@ -363,32 +367,10 @@ class MainMenu {
         return current;
     }
 
-
-    /////////// CREATE GAME WINDOW
-    private void createGameWindow(int gameType, int langState, int repo, String diff, String iterType, int value) {
-        TimeCounter tc = new TimeCounter();
-        JFrame frame = new JFrame("Game");
-        JPanel gamePanel = new JPanel();
-        JPanel bottomPanel = new JPanel();
-        List<JButton> buttons = new ArrayList<>();
-        JTextField userAnswer = new JTextField();
-        JLabel wordToTranslate = new JLabel("Word to translate");
-        JLabel timeLabel = new JLabel();
-        JPanel spacingPanel = new JPanel();
-        int maxWords = value;
+    private void createGameWindowFromStart(int gameType, int langState, int repo, String diff, String iterType, int value) {
         editorDB = new DatabaseEditor();
         LearningGame game;
         game = new LearningGame();
-        Timer timer = new Timer(100, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Date currentTime = new Date(tc.getElapsedTime());
-                String format = getFormattedTime(currentTime);
-                timeLabel.setText("Time elapsed: " + format);
-            }
-        });
-        timer.setInitialDelay(0);
-        timer.start();
         if (gameType == LEARN) {
             game.setIfTest(false);
         } else {
@@ -412,13 +394,13 @@ class MainMenu {
         int sizeOfDBWords = game.getWordList().size();
 
         if (value > sizeOfDBWords) {
-            JOptionPane.showMessageDialog(mainframe, "There are not enough words in your database, you have " + editorDB.getAllWords().size() + "wordList");
-            maxWords = sizeOfDBWords;
+            JOptionPane.showMessageDialog(mainframe, "There are not enough words in your database, you have " + editorDB.getAllWords().size() + "questions");
+            value = sizeOfDBWords;
         }
         if (iterType.equals("Random")) {
-            game.createIterator(true, maxWords);
+            game.createIterator(true, value);
         } else {
-            game.createIterator(false, maxWords);
+            game.createIterator(false, value);
         }
 
         Iterator<Word> iterator = game.getIterator();
@@ -451,6 +433,118 @@ class MainMenu {
             tempQuestion.setAnwswers(answerWords);
             questions.add(tempQuestion);
         }
+
+        createGameWindow(questions, diff, value, game);
+    }
+
+    private void createGameWindowFromContinue() {
+        memento = readMemento();
+        //TODO Memento tutaj
+//        createGameWindow(memento.getGameState().getQuestions(),memento.getGameState().getDifficulty(),memento.getGameState().get);
+
+    }
+
+    /////////// CREATE GAME WINDOW
+//    private void createGameWindow(int gameType, int langState, int repo, String diff, String iterType, int value) {
+    private void createGameWindow(List<Question> questions, String diff, int maxWords, LearningGame game) {
+        TimeCounter tc = new TimeCounter();
+        JFrame frame = new JFrame("Game");
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                int result = JOptionPane.showConfirmDialog(null, "Are you sure", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+                if (result == JOptionPane.YES_OPTION) {
+                    System.exit(0);
+                } else {
+                    //Do nothing
+                }
+            }
+        });
+        JPanel gamePanel = new JPanel();
+        JPanel bottomPanel = new JPanel();
+        List<JButton> buttons = new ArrayList<>();
+        JTextField userAnswer = new JTextField();
+        JLabel wordToTranslate = new JLabel("Word to translate");
+        JLabel timeLabel = new JLabel();
+        JPanel spacingPanel = new JPanel();
+        Timer timer = new Timer(100, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Date currentTime = new Date(tc.getElapsedTime());
+                String format = getFormattedTime(currentTime);
+                timeLabel.setText("Time elapsed: " + format);
+            }
+        });
+        timer.setInitialDelay(0);
+        timer.start();
+        int[] currentQuestionIndex = {0};
+//        int maxWords = value;
+//        editorDB = new DatabaseEditor();
+//        LearningGame game;
+//        game = new LearningGame();
+//        if (gameType == LEARN) {
+//            game.setIfTest(false);
+//        } else {
+//            game.setIfTest(true);
+//        }
+//        LanguageState languageState;
+//        if (repo == FILEDB) {
+//            editorDB.setDatabase(new FileDatabase());
+//        } else {
+//            editorDB.setDatabase(new DatabaseRepository());
+//        }
+//
+//        if (langState == POLENG) {
+//            languageState = new PolishForeignState();
+//        } else {
+//            languageState = new ForeignPolishState();
+//        }
+//        game.setLanguageState(languageState);
+//        game.setQuestions(editorDB.findByLanguage(languageState.getLanguage()));
+//
+//        int sizeOfDBWords = game.getQuestions().size();
+//
+//        if (value > sizeOfDBWords) {
+//            JOptionPane.showMessageDialog(mainframe, "There are not enough words in your database, you have " + editorDB.getAllWords().size() + "questions");
+//            maxWords = sizeOfDBWords;
+//        }
+//        if (iterType.equals("Random")) {
+//            game.createIterator(true, maxWords);
+//        } else {
+//            game.createIterator(false, maxWords);
+//        }
+//
+//        Iterator<Word> iterator = game.getIterator();
+//        List<Question> questions = new ArrayList<>();
+//        final int[] currentQuestionIndex = {0};
+//        switch (diff) {
+//            case "2 words":
+//                game.setGameDifficulty(new TwoWordDifficulty());
+//                break;
+//            case "3 words":
+//                game.setGameDifficulty(new ThreeWordDifficulty());
+//                break;
+//            case "4 words":
+//                game.setGameDifficulty(new FourWordDifficulty());
+//                break;
+//            case "5 words":
+//                game.setGameDifficulty(new FiveWordDifficulty());
+//                break;
+//            case "Write words":
+//                game.setGameDifficulty(new WrittenWordDifficulty());
+//                break;
+//            default:
+//                game.setGameDifficulty(new TwoWordDifficulty());
+//        }
+//        while (iterator.hasNext()) {
+//            Question tempQuestion = new Question();
+//            Word word = iterator.next();
+//            List<Word> answerWords = game.getGameDifficulty().getAnswerWords(word, editorDB, game.getLanguageState());
+//            tempQuestion.setWordToTranslate(word);
+//            tempQuestion.setAnwswers(answerWords);
+//            questions.add(tempQuestion);
+//        }
         switch (diff) {
             case "2 words":
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 2);
@@ -475,7 +569,7 @@ class MainMenu {
         }
 
 
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setResizable(false);
         frame.setLocation(10, 10);
         frame.setLayout(new BorderLayout());
@@ -514,6 +608,7 @@ class MainMenu {
         bottomPanel.add(userAnswer);
         userAnswer.addActionListener(e -> {
             if (game.isIfTest()) {
+                //TODO Pozbadz sie jakos tego game'a zeby mozna bylo z memento bez problemu wczytac
                 checkIfCorrectAnswer(userAnswer.getText(), questions, currentQuestionIndex, game);
                 userAnswer.setText("");
 
@@ -544,7 +639,7 @@ class MainMenu {
 
                 } else {
                     if (button.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
-                        //TODO Jeżeli słowo z przycisku zgadza się to podbijamy indeks currentQuestionIndex i dajemy jakiś punkt czy coś
+                        //TODO Tutaj tez wywal tego game'a
                         questions.get(currentQuestionIndex[0]).setPickByUser(button.getText());
                         currentQuestionIndex[0]++;
                     }

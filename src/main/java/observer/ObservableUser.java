@@ -50,7 +50,8 @@ public class ObservableUser extends Observable implements ActionListener {
 
     @Override
     public void notifyObservers() {
-        for (Observer observer : observers) {
+        for (int i = 0; i < observers.size(); i++) {
+            Observer observer = observers.get(i);
             observer.update(this, "");
         }
     }

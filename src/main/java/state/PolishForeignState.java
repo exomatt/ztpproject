@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * The type Polish foreign state.
  */
-public class PolishForeignState extends LanguageState {
+public class PolishForeignState implements LanguageState {
     @Override
     public String getLanguage() {
         return "pl";

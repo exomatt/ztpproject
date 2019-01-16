@@ -27,9 +27,6 @@ public class AlphabetIterator implements Iterator<Word> {
      */
     public AlphabetIterator(List<Word> listFromDB, int number) {
         position = 0;
-        if (listFromDB.size() > number) {
-            log.severe("Number is greater than list size");
-        }
         Collections.shuffle(listFromDB);
         for (int i = 0; i < number; i++) {
             wordList.add(listFromDB.get(i));

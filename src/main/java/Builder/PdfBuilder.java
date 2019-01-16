@@ -84,29 +84,49 @@ public class PdfBuilder implements RaportBuilder {
         document.open();
         BaseFont baseFont = BaseFont.createFont("c:/windows/fonts/arial.ttf", BaseFont.CP1250, BaseFont.EMBEDDED);
         Font font = new Font(baseFont, 16, Font.NORMAL);
-        Font correctAnswerF = new Font(baseFont, 12, Font.BOLD);
+        Font userAnswerFont = new Font(baseFont, 12, Font.BOLD);
         Font answerF = new Font(baseFont, 12, Font.NORMAL);
 
 
         for (int i = 0; i < maxSize; i++) {
             Paragraph paragraph = new Paragraph("Word to translate: " + wordsToTranslateList.get(i).getWord() + "\n", font);
             PdfPTable table = new PdfPTable(1);
-            for (int j = 0; j < answersList.get(i).size(); j++) {
+            if (answersList.get(i).size() == 1) {
                 PdfPCell cell = new PdfPCell();
-                if (answersList.get(i).get(j).getWord().equals(correctAnswers.get(i).getWord())) {
+                PdfPCell pdfPCell = new PdfPCell();
+                if (answersList.get(i).get(0).getWord().equals(correctAnswers.get(i).getWord())) {
                     cell.setBackgroundColor(BaseColor.GREEN);
                 }
                 if (userAnswersList != null) {
-                    if (answersList.get(i).get(j).getWord().equals(userAnswersList.get(i))) {
-                        cell.setPhrase(new Phrase(answersList.get(i).get(j).getWord(), correctAnswerF));
+                    if (answersList.get(i).get(0).getWord().equals(userAnswersList.get(i))) {
+                        cell.setPhrase(new Phrase(answersList.get(i).get(0).getWord(), userAnswerFont));
+                    } else {
+                        cell.setPhrase(new Phrase(answersList.get(i).get(0).getWord(), answerF));
+                        pdfPCell.setPhrase(new Phrase(userAnswersList.get(i), userAnswerFont));
+                        table.addCell(pdfPCell);
+                    }
+                } else {
+                    cell.setPhrase(new Phrase(answersList.get(i).get(0).getWord(), userAnswerFont));
+                }
+                table.addCell(cell);
+            } else {
+                for (int j = 0; j < answersList.get(i).size(); j++) {
+                    PdfPCell cell = new PdfPCell();
+                    if (answersList.get(i).get(j).getWord().equals(correctAnswers.get(i).getWord())) {
+                        cell.setBackgroundColor(BaseColor.GREEN);
+                    }
+                    if (userAnswersList != null) {
+                        if (answersList.get(i).get(j).getWord().equals(userAnswersList.get(i))) {
+                            cell.setPhrase(new Phrase(answersList.get(i).get(j).getWord(), userAnswerFont));
+                        } else {
+                            cell.setPhrase(new Phrase(answersList.get(i).get(j).getWord(), answerF));
+                        }
                     } else {
                         cell.setPhrase(new Phrase(answersList.get(i).get(j).getWord(), answerF));
                     }
-                } else {
-                    cell.setPhrase(new Phrase(answersList.get(i).get(j).getWord(), answerF));
-                }
-                table.addCell(cell);
+                    table.addCell(cell);
 
+                }
             }
             preface.add(paragraph);
             preface.add(new Paragraph(" "));
@@ -115,6 +135,6 @@ public class PdfBuilder implements RaportBuilder {
         }
         document.add(preface);
         document.close();
-        return "File has been saved to " + resultPath;
+        return "File has been saved to " + resultPath.getAbsolutePath();
     }
 }

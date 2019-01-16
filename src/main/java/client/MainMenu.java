@@ -1,8 +1,9 @@
 package client;
 
-import Builder.PdfBuilder;
-import Builder.RaportBuilder;
-import Builder.TxtBuilder;
+import Utils.TimeCounter;
+import builder.PdfBuilder;
+import builder.RaportBuilder;
+import builder.TxtBuilder;
 import com.itextpdf.text.DocumentException;
 import database.DatabaseEditor;
 import database.DatabaseRepository;
@@ -16,10 +17,13 @@ import state.PolishForeignState;
 import strategy.*;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -357,17 +361,29 @@ class MainMenu {
 
     /////////// CREATE GAME WINDOW
     private void createGameWindow(int gameType, int langState, int repo, String diff, String iterType, int value) {
+        TimeCounter tc = new TimeCounter();
         JFrame frame = new JFrame("Game");
         JPanel gamePanel = new JPanel();
         JPanel bottomPanel = new JPanel();
         List<JButton> buttons = new ArrayList<>();
         JTextField userAnswer = new JTextField();
         JLabel wordToTranslate = new JLabel("Word to translate");
+        JLabel timeLabel = new JLabel();
         JPanel spacingPanel = new JPanel();
         int maxWords = value;
         editorDB = new DatabaseEditor();
         LearningGame game;
         game = new LearningGame();
+        Timer timer = new Timer(100, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Date currentTime = new Date(tc.getElapsedTime());
+                String format = getFormattedTime(currentTime);
+                timeLabel.setText("Time elapsed: " + format);
+            }
+        });
+        timer.setInitialDelay(0);
+        timer.start();
         if (gameType == LEARN) {
             game.setIfTest(false);
         } else {
@@ -466,11 +482,21 @@ class MainMenu {
 
         frame.add(gamePanel, BorderLayout.NORTH);
         spacingPanel.setPreferredSize(new Dimension(300, 100));
+        spacingPanel.setLayout(new BorderLayout());
+        spacingPanel.add(timeLabel, BorderLayout.CENTER);
+        frame.add(new JPanel(), BorderLayout.EAST);
+        frame.add(new JPanel(), BorderLayout.WEST);
         frame.add(spacingPanel, BorderLayout.CENTER);
         frame.add(bottomPanel, BorderLayout.SOUTH);
         frame.pack();
         frame.setVisible(true);
 
+    }
+
+    private String getFormattedTime(Date currentTime) {
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return formatter.format(currentTime);
     }
 
     private void addButtonsToList(List<JButton> buttons, Question question, int amount) {

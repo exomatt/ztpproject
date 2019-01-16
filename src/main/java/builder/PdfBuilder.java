@@ -1,4 +1,4 @@
-package Builder;
+package builder;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.BaseFont;

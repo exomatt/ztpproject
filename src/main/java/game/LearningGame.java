@@ -1,6 +1,6 @@
 package game;
 
-import Builder.RaportBuilder;
+import builder.RaportBuilder;
 import iterator.AlphabetIterator;
 import iterator.RandomIterator;
 import lombok.Data;

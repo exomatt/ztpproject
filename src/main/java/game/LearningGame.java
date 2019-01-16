@@ -30,7 +30,7 @@ public class LearningGame {
     private boolean ifTest;
     private int lastQuestionIndex;
     private List<Question> questions;
-
+    private int maxValue;
     /**
      * Create iterator.
      *
@@ -54,6 +54,7 @@ public class LearningGame {
         GameMemento gameState = new GameMemento();
         GameToSave gameToSave = new GameToSave();
         gameToSave.setIfTest(ifTest);
+        gameToSave.setMaxValue(maxValue);
         gameToSave.setQuestions(questions);
         gameToSave.setLastQuestionIndex(lastQuestionIndex);
         gameToSave.setDifficulty(difficulty);
@@ -65,6 +66,7 @@ public class LearningGame {
         GameToSave gameState = memento.getGameState();
         questions = gameState.getQuestions();
         ifTest = gameState.isIfTest();
+        maxValue = gameState.getMaxValue();
         lastQuestionIndex = gameState.getLastQuestionIndex();
         switch (gameState.getDifficulty()) {
             case "2 words":

@@ -17,7 +17,6 @@ import state.ForeignPolishState;
 import state.LanguageState;
 import state.PolishForeignState;
 import strategy.*;
-import utilities.TimeCounter;
 
 import javax.swing.Timer;
 import javax.swing.*;
@@ -456,7 +455,6 @@ class MainMenu implements Observer {
 
     /////////// CREATE GAME WINDOW
     private void createGameWindow(List<Question> questions, String diff, int maxWords, boolean game, int index) {
-        TimeCounter tc = new TimeCounter();
         JFrame frame = new JFrame("Game");
         int[] currentQuestionIndex = {index};
         frame.addWindowListener(new WindowAdapter() {
@@ -497,7 +495,7 @@ class MainMenu implements Observer {
 //        });
         ObservableUser listener = new ObservableUser(timeLabel, maxWords);
         listener.addObserver(this);
-        Timer timer = new Timer(1000, listener);
+        Timer timer = new Timer(100, listener);
         timer.setInitialDelay(0);
         timer.start();
         switch (diff) {
@@ -509,7 +507,8 @@ class MainMenu implements Observer {
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 3);
                 setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
-            case "4 words":
+            case "4 words"
+                    :
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 4);
                 setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
@@ -700,8 +699,8 @@ class MainMenu implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        // todo tu musi sie dziac
-        //o.deleteObserver(this);
+        // todo tu musi sie dziac magia i wyskakuje okienko a gra sie konczy :3 ;p
+        o.deleteObserver(this);
         System.out.println("dostałem wiadomosc ");
 
     }

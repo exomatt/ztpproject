@@ -29,6 +29,7 @@ public class ObservableUser extends Observable implements ActionListener {
     public ObservableUser(JLabel timeLabel, int numberOfWords) {
         this.timeLabel = timeLabel;
         timeAmount = 5 * numberOfWords;
+        elapsedSeconds = timeAmount;
     }
 
     public void addObserver(Observer observer) {
@@ -41,18 +42,16 @@ public class ObservableUser extends Observable implements ActionListener {
 
     @Override
     public void notifyObservers() {
-        for (Observer observer : observers) {
+        for (int i = 0; i < observers.size(); i++) {
+            Observer observer = observers.get(i);
             observer.update(this, "");
         }
-        //todo dokonczyc :/
-
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (elapsedSeconds == 0) {
             notifyObservers();
-            elapsedSeconds = timeAmount;
         } else {
             elapsedSeconds--;
         }

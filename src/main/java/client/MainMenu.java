@@ -17,20 +17,17 @@ import state.LanguageState;
 import state.PolishForeignState;
 import strategy.*;
 
-import javax.swing.Timer;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 /**
  * The type Main menu.
@@ -77,12 +74,7 @@ class MainMenu implements Observer {
         mainframe.pack();
         mainframe.setVisible(true);
         continueButton.setEnabled(false);
-        continueButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                createGameWindowFromContinue();
-            }
-        });
+        continueButton.addActionListener(e -> createGameWindowFromContinue());
         if (new File("save/memento.ser").exists()) {
             continueButton.setEnabled(true);
         }
@@ -326,7 +318,6 @@ class MainMenu implements Observer {
             }
             if (current == null) {
                 String language = languageWordComboBox.getSelectedItem().toString();
-                System.out.println(language);
                 Word translation;
                 Word word;
                 if (language.equals("pl")) {
@@ -451,12 +442,6 @@ class MainMenu implements Observer {
         memento = readMemento();
         LearningGame game = new LearningGame();
         game.setMemento(memento);
-//        createGameWindow(memento.getGameState().getQuestions(),
-//                memento.getGameState().getDifficulty(),
-//                memento.getGameState().getMaxValue(),
-//                memento.getGameState().isIfTest(),
-//                memento.getGameState().getLastQuestionIndex(),
-//                null);
         createGameWindow(game.getQuestions(),
                 game.getDiff(),
                 game.getMaxValue(),
@@ -482,17 +467,12 @@ class MainMenu implements Observer {
                     learningGame.setLastQuestionIndex(currentQuestionIndex[0]);
                     learningGame.setDiff(diff);
                     memento = learningGame.createMemento();
-//                    memento = new GameMemento();
-//                    GameToSave gameState = new GameToSave();
-//                    gameState.setQuestions(questions);
-//                    gameState.setDifficulty(diff);
-//                    gameState.setIfTest(game);
-//                    gameState.setLastQuestionIndex(currentQuestionIndex[0]);
-//                    gameState.setMaxValue(maxWords);
-//                    memento.setGameState(gameState);
                     addMemento(memento);
-                    System.exit(0);
+                    continueButton.setEnabled(true);
+                    gameFrame.dispose();
                 } else {
+                    removeMemento();
+                    continueButton.setEnabled(false);
                     gameFrame.dispose();
                 }
             }
@@ -504,14 +484,6 @@ class MainMenu implements Observer {
         JLabel wordToTranslate = new JLabel("Word to translate");
         JLabel timeLabel = new JLabel();
         JPanel spacingPanel = new JPanel();
-//        Timer timer = new Timer(100, new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                Date currentTime = new Date(tc.getElapsedTime());
-//                String format = getFormattedTime(currentTime);
-//                timeLabel.setText("Time elapsed: " + format);
-//            }
-//        });
         if (game) {
             ObservableUser listener = new ObservableUser(timeLabel, maxWords);
             listener.addObserver(this);
@@ -549,7 +521,7 @@ class MainMenu implements Observer {
         gameFrame.setLayout(new BorderLayout());
         gamePanel.setLayout(new FlowLayout());
         gamePanel.add(wordToTranslate);
-        wordToTranslate.setText("Word to translate:  " + questions.get(currentQuestionIndex[0]).getWordToTranslate().getWord());
+        wordToTranslate.setText(String.format("Word to translate:  %s", questions.get(currentQuestionIndex[0]).getWordToTranslate().getWord()));
 
         bottomPanel.setLayout(new GridLayout());
 
@@ -564,12 +536,6 @@ class MainMenu implements Observer {
         gameFrame.pack();
         gameFrame.setVisible(true);
 
-    }
-
-    private String getFormattedTime(Date currentTime) {
-        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
-        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return formatter.format(currentTime);
     }
 
     private void addButtonsToList(List<JButton> buttons, Question question, int amount) {
@@ -712,22 +678,12 @@ class MainMenu implements Observer {
         }
     }
 
-    private int countCorrectAnswers(List<Question> questions) {
-        int points = 0;
-        for (Question question : questions) {
-            if (question.getWordToTranslate().getTranslation().getWord().equals(question.getPickByUser()))
-                points++;
-        }
-        return points;
-    }
-
     @Override
     public void update(Observable o, Object arg) {
         // todo tu musi sie dziac magia i wyskakuje okienko a gra sie konczy :3 ;p
         resultPopup(questions, isTest);
         gameFrame.dispose();
         o.deleteObserver(this);
-        System.out.println("dostałem wiadomosc ");
 
     }
 }

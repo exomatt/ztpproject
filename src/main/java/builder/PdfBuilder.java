@@ -8,7 +8,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 import model.Word;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -62,8 +61,8 @@ public class PdfBuilder implements RaportBuilder {
      * Build pdf string.
      *
      * @return the string
-     * @throws FileNotFoundException the file not found exception
-     * @throws DocumentException     the document exception
+     * @throws IOException       the io exception
+     * @throws DocumentException the document exception
      */
     public String buildPdf() throws IOException, DocumentException {
         int[] sizes;
@@ -150,7 +149,7 @@ public class PdfBuilder implements RaportBuilder {
         }
         if (points > -1) {
             preface.add(new Paragraph(" "));
-            preface.add("You had " + String.valueOf(points) + "/" + String.valueOf(maxSize) + " points");
+            preface.add(String.format("You had %s/%s points", String.valueOf(points), String.valueOf(maxSize)));
         }
         document.add(preface);
         document.close();

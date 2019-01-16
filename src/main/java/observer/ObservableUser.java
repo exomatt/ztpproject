@@ -26,24 +26,31 @@ public class ObservableUser extends Observable implements ActionListener {
     private String seconds = Integer.toString(elapsedSeconds);
 
 
+    /**
+     * Instantiates a new Observable user.
+     *
+     * @param timeLabel     the time label
+     * @param numberOfWords the number of words
+     */
     public ObservableUser(JLabel timeLabel, int numberOfWords) {
         this.timeLabel = timeLabel;
         timeAmount = 5 * numberOfWords;
         elapsedSeconds = timeAmount;
     }
 
+    @Override
     public void addObserver(Observer observer) {
         observers.add(observer);
     }
 
+    @Override
     public void deleteObserver(Observer observer) {
         observers.remove(observer);
     }
 
     @Override
     public void notifyObservers() {
-        for (int i = 0; i < observers.size(); i++) {
-            Observer observer = observers.get(i);
+        for (Observer observer : observers) {
             observer.update(this, "");
         }
     }

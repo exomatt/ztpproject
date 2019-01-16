@@ -18,8 +18,8 @@ import state.LanguageState;
 import state.PolishForeignState;
 import strategy.*;
 
-import javax.swing.Timer;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,8 +30,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 /**
  * The type Main menu.
@@ -48,6 +48,7 @@ class MainMenu {
     private static final int POLENG = 2;
     private static final int ENGPOL = 3;
     private final JFrame mainframe;
+    JButton continueButton = new JButton("Continue");
     private JList list;
     private List<Word> words;
     private JComboBox<String> languageComboBox;
@@ -66,7 +67,6 @@ class MainMenu {
         mainframe.setLayout(gridLayout);
         JButton startButton = new JButton("Start");
         mainframe.add(startButton);
-        JButton continueButton = new JButton("Continue");
         mainframe.add(continueButton);
         JButton editButton = new JButton("Edit your words");
         mainframe.add(editButton);
@@ -412,7 +412,6 @@ class MainMenu {
 
         Iterator<Word> iterator = game.getIterator();
         List<Question> questions = new ArrayList<>();
-        final int[] currentQuestionIndex = {0};
         switch (diff) {
             case "2 words":
                 game.setGameDifficulty(new TwoWordDifficulty());
@@ -560,6 +559,8 @@ class MainMenu {
         bottomPanel.add(userAnswer);
         userAnswer.addActionListener(e -> {
             if (game) {
+                questions.get(currentQuestionIndex[0]).setPickByUser(userAnswer.getText());
+                currentQuestionIndex[0]++;
                 userAnswer.setText("");
             } else {
                 if (userAnswer.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
@@ -583,12 +584,15 @@ class MainMenu {
                 buttons) {
             bottomPanel.add(button);
             button.addActionListener(e -> {
-
+                if (game) {
+                    questions.get(currentQuestionIndex[0]).setPickByUser(button.getText());
+                    currentQuestionIndex[0]++;
+                } else {
                     if (button.getText().equals(questions.get(currentQuestionIndex[0]).getWordToTranslate().getTranslation().getWord())) {
                         questions.get(currentQuestionIndex[0]).setPickByUser(button.getText());
                         currentQuestionIndex[0]++;
                     }
-
+                }
                 if (currentQuestionIndex[0] == maxWords) {
                     resultPopup(questions, game);
                     frame.dispose();
@@ -631,6 +635,7 @@ class MainMenu {
                 e.printStackTrace();
             }
         }
+        continueButton.setEnabled(false);
     }
 
     private void updateUI(List<JButton> buttons, JLabel wordToTranslate, List<Question> questions, int currentQuestionIndex) {

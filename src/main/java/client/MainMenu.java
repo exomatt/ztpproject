@@ -1,6 +1,5 @@
 package client;
 
-import Utils.TimeCounter;
 import builder.PdfBuilder;
 import builder.RaportBuilder;
 import builder.TxtBuilder;
@@ -13,13 +12,15 @@ import memento.GameMemento;
 import memento.GameToSave;
 import model.Question;
 import model.Word;
+import observer.ObservableUser;
 import state.ForeignPolishState;
 import state.LanguageState;
 import state.PolishForeignState;
 import strategy.*;
+import utils.TimeCounter;
 
-import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,13 +31,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * The type Main menu.
  */
-class MainMenu {
+class MainMenu implements Observer {
 
     private static final int MIN_QUESTIONS = 2;
     private static final int MAX_QUESTIONS = 25;
@@ -486,14 +487,17 @@ class MainMenu {
         JLabel wordToTranslate = new JLabel("Word to translate");
         JLabel timeLabel = new JLabel();
         JPanel spacingPanel = new JPanel();
-        Timer timer = new Timer(100, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Date currentTime = new Date(tc.getElapsedTime());
-                String format = getFormattedTime(currentTime);
-                timeLabel.setText("Time elapsed: " + format);
-            }
-        });
+//        Timer timer = new Timer(100, new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                Date currentTime = new Date(tc.getElapsedTime());
+//                String format = getFormattedTime(currentTime);
+//                timeLabel.setText("Time elapsed: " + format);
+//            }
+//        });
+        ObservableUser listener = new ObservableUser(timeLabel);
+        listener.addObserver(this);
+        Timer timer = new Timer(100, listener);
         timer.setInitialDelay(0);
         timer.start();
         switch (diff) {
@@ -693,5 +697,13 @@ class MainMenu {
                 points++;
         }
         return points;
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        // todo tu musi sie dziac
+        o.deleteObserver(this);
+        System.out.println("dostałem wiadomosc ");
+
     }
 }

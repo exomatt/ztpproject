@@ -22,7 +22,7 @@ public class PdfBuilder implements RaportBuilder {
 
     private List<Word> wordsToTranslateList;
     private List<List<Word>> answersList;
-    private List<Word> correctAnswers;
+    private List<Word> correctAnswersList;
     private List<String> userAnswersList;
 
     @Override
@@ -43,10 +43,10 @@ public class PdfBuilder implements RaportBuilder {
 
     @Override
     public void addCorrectAnswer(Word correct) {
-        if (correctAnswers == null) {
-            correctAnswers = new LinkedList<>();
+        if (correctAnswersList == null) {
+            correctAnswersList = new LinkedList<>();
         }
-        correctAnswers.add(correct);
+        correctAnswersList.add(correct);
     }
 
     @Override
@@ -68,10 +68,10 @@ public class PdfBuilder implements RaportBuilder {
         int[] sizes;
         int points;
         if (userAnswersList == null) {
-            sizes = new int[]{wordsToTranslateList.size(), answersList.size(), correctAnswers.size()};
+            sizes = new int[]{wordsToTranslateList.size(), answersList.size(), correctAnswersList.size()};
             points = -1;
         } else {
-            sizes = new int[]{wordsToTranslateList.size(), answersList.size(), correctAnswers.size(), userAnswersList.size()};
+            sizes = new int[]{wordsToTranslateList.size(), answersList.size(), correctAnswersList.size(), userAnswersList.size()};
             points = 0;
 
         }
@@ -98,7 +98,7 @@ public class PdfBuilder implements RaportBuilder {
             if (answersList.get(i).size() == 1) {
                 PdfPCell cell = new PdfPCell();
                 PdfPCell pdfPCell = new PdfPCell();
-                if (answersList.get(i).get(0).getWord().equals(correctAnswers.get(i).getWord())) {
+                if (answersList.get(i).get(0).getWord().equals(correctAnswersList.get(i).getWord())) {
                     cell.setBackgroundColor(BaseColor.GREEN);
                 }
                 if (userAnswersList != null) {
@@ -109,7 +109,7 @@ public class PdfBuilder implements RaportBuilder {
                         pdfPCell.setPhrase(new Phrase(userAnswersList.get(i), userAnswerFont));
                         table.addCell(pdfPCell);
                     }
-                    if (answersList.get(i).get(0).getWord().equals(correctAnswers.get(i).getWord()) &&
+                    if (answersList.get(i).get(0).getWord().equals(correctAnswersList.get(i).getWord()) &&
                             answersList.get(i).get(0).getWord().equals(userAnswersList.get(i))
                     ) {
                         points++;
@@ -122,7 +122,7 @@ public class PdfBuilder implements RaportBuilder {
             } else {
                 for (int j = 0; j < answersList.get(i).size(); j++) {
                     PdfPCell cell = new PdfPCell();
-                    if (answersList.get(i).get(j).getWord().equals(correctAnswers.get(i).getWord())) {
+                    if (answersList.get(i).get(j).getWord().equals(correctAnswersList.get(i).getWord())) {
                         cell.setBackgroundColor(BaseColor.GREEN);
                     }
                     if (userAnswersList != null) {
@@ -131,7 +131,7 @@ public class PdfBuilder implements RaportBuilder {
                         } else {
                             cell.setPhrase(new Phrase(answersList.get(i).get(j).getWord(), answerF));
                         }
-                        if (answersList.get(i).get(j).getWord().equals(correctAnswers.get(i).getWord()) &&
+                        if (answersList.get(i).get(j).getWord().equals(correctAnswersList.get(i).getWord()) &&
                                 answersList.get(i).get(j).getWord().equals(userAnswersList.get(i))
                         ) {
                             points++;

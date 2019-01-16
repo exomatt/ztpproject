@@ -18,7 +18,7 @@ public class TxtBuilder implements RaportBuilder {
 
     private List<Word> wordsToTranslateList;
     private List<List<Word>> answersList;
-    private List<Word> correctAnswers;
+    private List<Word> correctAnswersList;
     private List<String> userAnswersList;
 
     @Override
@@ -39,10 +39,10 @@ public class TxtBuilder implements RaportBuilder {
 
     @Override
     public void addCorrectAnswer(Word correct) {
-        if (correctAnswers == null) {
-            correctAnswers = new LinkedList<>();
+        if (correctAnswersList == null) {
+            correctAnswersList = new LinkedList<>();
         }
-        correctAnswers.add(correct);
+        correctAnswersList.add(correct);
     }
 
     @Override
@@ -65,10 +65,10 @@ public class TxtBuilder implements RaportBuilder {
         FileWriter fileWriter;
         int[] sizes;
         if (userAnswersList == null) {
-            sizes = new int[]{wordsToTranslateList.size(), answersList.size(), correctAnswers.size()};
+            sizes = new int[]{wordsToTranslateList.size(), answersList.size(), correctAnswersList.size()};
             points = -1;
         } else {
-            sizes = new int[]{wordsToTranslateList.size(), answersList.size(), correctAnswers.size(), userAnswersList.size()};
+            sizes = new int[]{wordsToTranslateList.size(), answersList.size(), correctAnswersList.size(), userAnswersList.size()};
         }
         IntSummaryStatistics stat = Arrays.stream(sizes).summaryStatistics();
         int maxSize = stat.getMax();
@@ -82,14 +82,14 @@ public class TxtBuilder implements RaportBuilder {
             for (int j = 0; j < answersList.get(i).size(); j++) {
                 bufferedWriter.write(String.valueOf(j + 1) + ". " + answersList.get(i).get(j).getWord() + "\n\n");
                 if (userAnswersList != null) {
-                    if (answersList.get(i).get(j).getWord().equals(correctAnswers.get(i).getWord()) &&
+                    if (answersList.get(i).get(j).getWord().equals(correctAnswersList.get(i).getWord()) &&
                             answersList.get(i).get(j).getWord().equals(userAnswersList.get(i))
                     ) {
                         points++;
                     }
                 }
             }
-            bufferedWriter.write("Correct answer: " + correctAnswers.get(i).getWord() + "\n");
+            bufferedWriter.write("Correct answer: " + correctAnswersList.get(i).getWord() + "\n");
             if (userAnswersList != null) {
                 bufferedWriter.write("Users answer: " + userAnswersList.get(i) + "\n");
             }

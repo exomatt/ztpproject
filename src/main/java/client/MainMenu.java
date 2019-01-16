@@ -36,49 +36,49 @@ import java.util.List;
 @Log
 class MainMenu implements Observer {
 
-    private static final int MIN_QUESTIONS = 2;
-    private static final int MAX_QUESTIONS = 25;
-    private static final int FILEDB = 4;
-    private static final int REPODB = 5;
-    private DatabaseEditor editorDB;
+    private static final int MIN_QUESTIONS_AMOUNT = 2;
+    private static final int MAX_QUESTIONS_AMOUNT = 25;
+    private static final int FILEDATABASE = 4;
+    private static final int MYSQLDATABASE = 5;
+    private DatabaseEditor databaseEditor;
     private static final int LEARN = 0;
     private static final int TEST = 1;
-    private static final int POLENG = 2;
-    private static final int ENGPOL = 3;
-    private final JFrame mainframe;
-    private JButton continueButton = new JButton("Continue");
-    private JList list;
+    private static final int POLISH_ENGLISH = 2;
+    private static final int ENGLISH_POLISH = 3;
+    private final JFrame mainWindowFrame;
+    private JButton loadSavedSessionButton = new JButton("Load saved session");
+    private JList databaseWordsList;
     private List<Word> words;
     private JComboBox<String> languageComboBox;
     private GameMemento memento;
     private List<Question> questions;
     private boolean isTest;
-    private JFrame gameFrame;
+    private JFrame sessionWindowFrame;
 
     /**
      * Instantiates a new Main menu.
      */
     MainMenu() {
-        mainframe = new JFrame("Learning languages");
-        mainframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        mainframe.setResizable(false);
-        mainframe.setLocation(10, 10);
-        mainframe.setPreferredSize(new Dimension(500, 500));
+        mainWindowFrame = new JFrame("Learning languages");
+        mainWindowFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainWindowFrame.setResizable(false);
+        mainWindowFrame.setLocation(10, 10);
+        mainWindowFrame.setPreferredSize(new Dimension(500, 500));
         GridLayout gridLayout = new GridLayout(4, 1);
-        mainframe.setLayout(gridLayout);
+        mainWindowFrame.setLayout(gridLayout);
         JButton startButton = new JButton("Start");
-        mainframe.add(startButton);
-        mainframe.add(continueButton);
+        mainWindowFrame.add(startButton);
+        mainWindowFrame.add(loadSavedSessionButton);
         JButton editButton = new JButton("Edit your words");
-        mainframe.add(editButton);
+        mainWindowFrame.add(editButton);
         JButton exitButton = new JButton("Exit");
-        mainframe.add(exitButton);
-        mainframe.pack();
-        mainframe.setVisible(true);
-        continueButton.setEnabled(false);
-        continueButton.addActionListener(e -> createGameWindowFromContinue());
+        mainWindowFrame.add(exitButton);
+        mainWindowFrame.pack();
+        mainWindowFrame.setVisible(true);
+        loadSavedSessionButton.setEnabled(false);
+        loadSavedSessionButton.addActionListener(e -> createGameWindowFromContinue());
         if (new File("save/memento.ser").exists()) {
-            continueButton.setEnabled(true);
+            loadSavedSessionButton.setEnabled(true);
         }
         startButton.addActionListener(e -> {
                     JRadioButton polEngRadioButton = new JRadioButton("Polish-English");
@@ -104,7 +104,7 @@ class MainMenu implements Observer {
 
                     JComboBox<String> difficultyComboBox = new JComboBox<>(new String[]{"2 words", "3 words", "4 words", "5 words", "Write words"});
                     JComboBox<String> iteratorComboBox = new JComboBox<>(new String[]{"Random", "Alphabet"});
-                    JSlider questionsAmountSlider = new JSlider(MIN_QUESTIONS, MAX_QUESTIONS);
+            JSlider questionsAmountSlider = new JSlider(MIN_QUESTIONS_AMOUNT, MAX_QUESTIONS_AMOUNT);
                     JLabel amountLabel = new JLabel(String.valueOf(questionsAmountSlider.getValue()));
                     questionsAmountSlider.setMajorTickSpacing(5);
                     questionsAmountSlider.setMinorTickSpacing(1);
@@ -131,36 +131,36 @@ class MainMenu implements Observer {
                     int result = JOptionPane.showConfirmDialog(null, inputs, "New game options", JOptionPane.OK_CANCEL_OPTION);
                     if (result == JOptionPane.OK_OPTION) {
                         String gameDifficulty = difficultyComboBox.getSelectedItem().toString();
-                        String iterType = iteratorComboBox.getSelectedItem().toString();
+                        String iterationType = iteratorComboBox.getSelectedItem().toString();
                         int questionsAmount = questionsAmountSlider.getValue();
                         if (learnRadioButton.isSelected()) {
                             isTest = false;
                             if (polEngRadioButton.isSelected()) {
                                 if (fileDatabaseRadioButton.isSelected()) {
-                                    createGameWindowFromStart(LEARN, POLENG, FILEDB, gameDifficulty, iterType, questionsAmount);   ///Learn, Polish-English, File Database
+                                    createGameWindowFromStart(LEARN, POLISH_ENGLISH, FILEDATABASE, gameDifficulty, iterationType, questionsAmount);   ///Learn, Polish-English, File Database
                                 } else {
-                                    createGameWindowFromStart(LEARN, POLENG, REPODB, gameDifficulty, iterType, questionsAmount);   ///Learn, Polish-English, Repo Database
+                                    createGameWindowFromStart(LEARN, POLISH_ENGLISH, MYSQLDATABASE, gameDifficulty, iterationType, questionsAmount);   ///Learn, Polish-English, Repo Database
                                 }
                             } else {
                                 if (fileDatabaseRadioButton.isSelected()) {
-                                    createGameWindowFromStart(LEARN, ENGPOL, FILEDB, gameDifficulty, iterType, questionsAmount);   //Learn, English-Polish, File Database
+                                    createGameWindowFromStart(LEARN, ENGLISH_POLISH, FILEDATABASE, gameDifficulty, iterationType, questionsAmount);   //Learn, English-Polish, File Database
                                 } else {
-                                    createGameWindowFromStart(LEARN, ENGPOL, REPODB, gameDifficulty, iterType, questionsAmount);   //Learn, English-Polish, Repo Database
+                                    createGameWindowFromStart(LEARN, ENGLISH_POLISH, MYSQLDATABASE, gameDifficulty, iterationType, questionsAmount);   //Learn, English-Polish, Repo Database
                                 }
                             }
                         } else {
                             isTest = true;
                             if (polEngRadioButton.isSelected()) {
                                 if (fileDatabaseRadioButton.isSelected()) {
-                                    createGameWindowFromStart(TEST, POLENG, FILEDB, gameDifficulty, iterType, questionsAmount);   //Test, Polish-English, File Database
+                                    createGameWindowFromStart(TEST, POLISH_ENGLISH, FILEDATABASE, gameDifficulty, iterationType, questionsAmount);   //Test, Polish-English, File Database
                                 } else {
-                                    createGameWindowFromStart(TEST, POLENG, REPODB, gameDifficulty, iterType, questionsAmount);   //Test, Polish-English, Repo Database
+                                    createGameWindowFromStart(TEST, POLISH_ENGLISH, MYSQLDATABASE, gameDifficulty, iterationType, questionsAmount);   //Test, Polish-English, Repo Database
                                 }
                             } else {
                                 if (fileDatabaseRadioButton.isSelected()) {
-                                    createGameWindowFromStart(TEST, ENGPOL, FILEDB, gameDifficulty, iterType, questionsAmount);   //Test, English-Polish, File Database
+                                    createGameWindowFromStart(TEST, ENGLISH_POLISH, FILEDATABASE, gameDifficulty, iterationType, questionsAmount);   //Test, English-Polish, File Database
                                 } else {
-                                    createGameWindowFromStart(TEST, ENGPOL, REPODB, gameDifficulty, iterType, questionsAmount);   //Test, English-Polish, Repo Database
+                                    createGameWindowFromStart(TEST, ENGLISH_POLISH, MYSQLDATABASE, gameDifficulty, iterationType, questionsAmount);   //Test, English-Polish, Repo Database
                                 }
                             }
                         }
@@ -169,11 +169,11 @@ class MainMenu implements Observer {
         );
         editButton.addActionListener(e -> {
             Object[] options = {"File", "Repoistory", "Cancel"};
-            int n = JOptionPane.showOptionDialog(mainframe, "Which database would you like to use", "Edit your words", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            int n = JOptionPane.showOptionDialog(mainWindowFrame, "Which database would you like to use", "Edit your words", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
             if (n == 0) {
-                createDataBaseWindow(FILEDB);
+                createDatabaseWindow(FILEDATABASE);
             } else if (n == 1) {
-                createDataBaseWindow(REPODB);
+                createDatabaseWindow(MYSQLDATABASE);
             }
         });
         exitButton.addActionListener(e -> System.exit(0));
@@ -181,7 +181,7 @@ class MainMenu implements Observer {
 
 
     //// CREATE DATABASE WINDOW
-    private void createDataBaseWindow(int source) {
+    private void createDatabaseWindow(int source) {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setResizable(false);
@@ -192,14 +192,14 @@ class MainMenu implements Observer {
 
         JButton editWordButton = new JButton("Edit");
         JButton removeWordButton = new JButton("Remove");
-        editorDB = new DatabaseEditor();
-        if (source == REPODB) {
-            editorDB.setDatabase(new DatabaseRepository());
+        databaseEditor = new DatabaseEditor();
+        if (source == MYSQLDATABASE) {
+            databaseEditor.setDatabase(new DatabaseRepository());
         } else {
-            editorDB.setDatabase(new FileDatabase());
+            databaseEditor.setDatabase(new FileDatabase());
         }
 
-        words = editorDB.findByLanguage("pl");
+        words = databaseEditor.findByLanguage("pl");
 
         if (words == null) {
             try {
@@ -213,7 +213,7 @@ class MainMenu implements Observer {
             words = Collections.emptyList();
         }
         CustomListModel model = new CustomListModel(words);
-        list = new JList(model);
+        databaseWordsList = new JList(model);
 
         languageComboBox = new JComboBox<>(new String[]{"Polish", "English"});
         languageComboBox.addItemListener(e -> setWordsByLanguage());
@@ -227,7 +227,7 @@ class MainMenu implements Observer {
         gc.weighty = 1;
         gc.gridx = 0;
         gc.gridy = 1;
-        JScrollPane listScroll = new JScrollPane(list);
+        JScrollPane listScroll = new JScrollPane(databaseWordsList);
         frame.add(listScroll, gc);
 
 
@@ -248,11 +248,11 @@ class MainMenu implements Observer {
         JTextField languageField = new JTextField();
         wordDetail.add(languageField);
         languageField.setEditable(false);
-        list.addListSelectionListener(e -> {
-            if (list.isSelectionEmpty()) {
+        databaseWordsList.addListSelectionListener(e -> {
+            if (databaseWordsList.isSelectionEmpty()) {
                 return;
             }
-            Word current = getCurrentWord(words, list);
+            Word current = getCurrentWord(words, databaseWordsList);
             wordField.setText(current.getWord());
             translationField.setText(current.getTranslation().getWord());
             languageField.setText(current.getLanguage());
@@ -266,16 +266,16 @@ class MainMenu implements Observer {
         addWordButton.addActionListener(e -> createWordPopup());
         editWordButton.setEnabled(false);
         editWordButton.addActionListener(e -> {
-            Word current = getCurrentWord(words, list);
-            createWordPopup(current);
+            Word currentWord = getCurrentWord(words, databaseWordsList);
+            createWordPopup(currentWord);
         });
         removeWordButton.setEnabled(false);
         removeWordButton.addActionListener(e -> {
-            Word current = getCurrentWord(words, list);
-            editorDB.deleteWord(current);
+            Word current = getCurrentWord(words, databaseWordsList);
+            databaseEditor.deleteWord(current);
             words.remove(current);
-            list.setModel(new CustomListModel(words));
-            list.clearSelection();
+            databaseWordsList.setModel(new CustomListModel(words));
+            databaseWordsList.clearSelection();
             wordField.setText("");
             translationField.setText("");
             languageField.setText("");
@@ -337,32 +337,32 @@ class MainMenu implements Observer {
                     translation = new Word(translationField.getText(), word, "pl");
                 }
                 word.setTranslation(translation);
-                editorDB.addWord(word);
-                refreshList();
+                databaseEditor.addWord(word);
+                refreshDatabaseList();
             } else {
                 Word translation = new Word(translationField.getText(), current, current.getTranslation().getLanguage());
                 current.setTranslation(translation);
-                editorDB.changeWorldTranslation(current);
-                refreshList();
+                databaseEditor.changeWorldTranslation(current);
+                refreshDatabaseList();
             }
 
 
         }
     }
 
-    private void refreshList() {
-        list.clearSelection();
+    private void refreshDatabaseList() {
+        databaseWordsList.clearSelection();
         words.clear();
         setWordsByLanguage();
     }
 
     private void setWordsByLanguage() {
         if (languageComboBox.getSelectedItem().toString().equals("Polish")) {
-            words = editorDB.findByLanguage("pl");
-            list.setModel(new CustomListModel(words));
+            words = databaseEditor.findByLanguage("pl");
+            databaseWordsList.setModel(new CustomListModel(words));
         } else {
-            words = editorDB.findByLanguage("eng");
-            list.setModel(new CustomListModel(words));
+            words = databaseEditor.findByLanguage("eng");
+            databaseWordsList.setModel(new CustomListModel(words));
         }
     }
 
@@ -379,7 +379,7 @@ class MainMenu implements Observer {
     }
 
     private void createGameWindowFromStart(int gameType, int langState, int repo, String diff, String iterType, int value) {
-        editorDB = new DatabaseEditor();
+        databaseEditor = new DatabaseEditor();
         LearningGame game;
         game = new LearningGame();
         if (gameType == LEARN) {
@@ -388,19 +388,19 @@ class MainMenu implements Observer {
             game.setIfTest(true);
         }
         LanguageState languageState;
-        if (repo == FILEDB) {
-            editorDB.setDatabase(new FileDatabase());
+        if (repo == FILEDATABASE) {
+            databaseEditor.setDatabase(new FileDatabase());
         } else {
-            editorDB.setDatabase(new DatabaseRepository());
+            databaseEditor.setDatabase(new DatabaseRepository());
         }
 
-        if (langState == POLENG) {
+        if (langState == POLISH_ENGLISH) {
             languageState = new PolishForeignState();
         } else {
             languageState = new ForeignPolishState();
         }
         game.setLanguageState(languageState);
-        game.setWordList(editorDB.findByLanguage(languageState.getLanguage()));
+        game.setWordList(databaseEditor.findByLanguage(languageState.getLanguage()));
 
         if (game.getWordList() == null) {
             return;
@@ -408,7 +408,7 @@ class MainMenu implements Observer {
         int sizeOfDBWords = game.getWordList().size();
 
         if (value > sizeOfDBWords) {
-            JOptionPane.showMessageDialog(mainframe, "There are not enough words in your database, you have " + editorDB.getAllWords().size() + "questions");
+            JOptionPane.showMessageDialog(mainWindowFrame, "There are not enough words in your database, you have " + databaseEditor.getAllWords().size() + " questions");
             value = sizeOfDBWords;
         }
         if (iterType.equals("Random")) {
@@ -441,9 +441,9 @@ class MainMenu implements Observer {
         while (iterator.hasNext()) {
             Question tempQuestion = new Question();
             Word word = iterator.next();
-            List<Word> answerWords = game.getGameDifficulty().getAnswerWords(word, editorDB, game.getLanguageState());
+            List<Word> answerWordsList = game.getGameDifficulty().getAnswerWords(word, databaseEditor, game.getLanguageState());
             tempQuestion.setWordToTranslate(word);
-            tempQuestion.setAnwswers(answerWords);
+            tempQuestion.setAnwswers(answerWordsList);
             questions.add(tempQuestion);
         }
 
@@ -466,9 +466,9 @@ class MainMenu implements Observer {
 
     /////////// CREATE GAME WINDOW
     private void createGameWindow(List<Question> questions, String diff, int maxWords, boolean game, int index, LearningGame learningGame) {
-        gameFrame = new JFrame("Game");
+        sessionWindowFrame = new JFrame("Game");
         int[] currentQuestionIndex = {index};
-        gameFrame.addWindowListener(new WindowAdapter() {
+        sessionWindowFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
@@ -480,12 +480,12 @@ class MainMenu implements Observer {
                     learningGame.setDiff(diff);
                     memento = learningGame.createMemento();
                     addMemento(memento);
-                    continueButton.setEnabled(true);
-                    gameFrame.dispose();
+                    loadSavedSessionButton.setEnabled(true);
+                    sessionWindowFrame.dispose();
                 } else {
                     removeMemento();
-                    continueButton.setEnabled(false);
-                    gameFrame.dispose();
+                    loadSavedSessionButton.setEnabled(false);
+                    sessionWindowFrame.dispose();
                 }
             }
         });
@@ -506,47 +506,47 @@ class MainMenu implements Observer {
         switch (diff) {
             case "2 words":
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 2);
-                setupButtons(gameFrame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
+                setupButtons(sessionWindowFrame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
             case "3 words":
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 3);
-                setupButtons(gameFrame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
+                setupButtons(sessionWindowFrame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
             case "4 words"
                     :
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 4);
-                setupButtons(gameFrame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
+                setupButtons(sessionWindowFrame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
             case "5 words":
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 5);
-                setupButtons(gameFrame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
+                setupButtons(sessionWindowFrame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
             case "Write words":
-                setupTextField(gameFrame, bottomPanel, userAnswer, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
+                setupTextField(sessionWindowFrame, bottomPanel, userAnswer, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
         }
 
 
-        gameFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        gameFrame.setResizable(false);
-        gameFrame.setLocation(10, 10);
-        gameFrame.setLayout(new BorderLayout());
+        sessionWindowFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        sessionWindowFrame.setResizable(false);
+        sessionWindowFrame.setLocation(10, 10);
+        sessionWindowFrame.setLayout(new BorderLayout());
         gamePanel.setLayout(new FlowLayout());
         gamePanel.add(wordToTranslate);
         wordToTranslate.setText(String.format("Word to translate:  %s", questions.get(currentQuestionIndex[0]).getWordToTranslate().getWord()));
 
         bottomPanel.setLayout(new GridLayout());
 
-        gameFrame.add(gamePanel, BorderLayout.NORTH);
+        sessionWindowFrame.add(gamePanel, BorderLayout.NORTH);
         spacingPanel.setPreferredSize(new Dimension(300, 100));
         spacingPanel.setLayout(new BorderLayout());
         spacingPanel.add(timeLabel, BorderLayout.CENTER);
-        gameFrame.add(new JPanel(), BorderLayout.EAST);
-        gameFrame.add(new JPanel(), BorderLayout.WEST);
-        gameFrame.add(spacingPanel, BorderLayout.CENTER);
-        gameFrame.add(bottomPanel, BorderLayout.SOUTH);
-        gameFrame.pack();
-        gameFrame.setVisible(true);
+        sessionWindowFrame.add(new JPanel(), BorderLayout.EAST);
+        sessionWindowFrame.add(new JPanel(), BorderLayout.WEST);
+        sessionWindowFrame.add(spacingPanel, BorderLayout.CENTER);
+        sessionWindowFrame.add(bottomPanel, BorderLayout.SOUTH);
+        sessionWindowFrame.pack();
+        sessionWindowFrame.setVisible(true);
 
     }
 
@@ -569,7 +569,7 @@ class MainMenu implements Observer {
                     currentQuestionIndex[0]++;
                     userAnswer.setText("");
                 } else {
-                    JOptionPane.showMessageDialog(mainframe, "Wrong answer!! Try again!");
+                    JOptionPane.showMessageDialog(mainWindowFrame, "Wrong answer!! Try again!");
                 }
             }
             if (currentQuestionIndex[0] == maxWords) {
@@ -594,7 +594,7 @@ class MainMenu implements Observer {
                         questions.get(currentQuestionIndex[0]).setPickByUser(button.getText());
                         currentQuestionIndex[0]++;
                     } else {
-                        JOptionPane.showMessageDialog(mainframe, "Wrong answer!! Try again!");
+                        JOptionPane.showMessageDialog(mainWindowFrame, "Wrong answer!! Try again!");
                     }
                 }
                 if (currentQuestionIndex[0] == maxWords) {
@@ -610,7 +610,7 @@ class MainMenu implements Observer {
     private void resultPopup(List<Question> questions, boolean game) {
         RaportBuilder builder = null;
         Object[] options = {"TXT", "PDF", "Don't save"};
-        int n = JOptionPane.showOptionDialog(mainframe, "How would you like to save?", "Save your results", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        int n = JOptionPane.showOptionDialog(mainWindowFrame, "How would you like to save?", "Save your results", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
         if (n == 0) {
             builder = new TxtBuilder();
         } else if (n == 1) {
@@ -628,18 +628,18 @@ class MainMenu implements Observer {
         }
         if (n == 0) {
             try {
-                JOptionPane.showMessageDialog(mainframe, "Your file has been saved to " + ((TxtBuilder) builder).buildTxt());
+                JOptionPane.showMessageDialog(mainWindowFrame, "Your file has been saved to " + ((TxtBuilder) builder).buildTxt());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else if (n == 1) {
             try {
-                JOptionPane.showMessageDialog(mainframe, "Your file has been saved to " + ((PdfBuilder) builder).buildPdf());
+                JOptionPane.showMessageDialog(mainWindowFrame, "Your file has been saved to " + ((PdfBuilder) builder).buildPdf());
             } catch (DocumentException | IOException e) {
                 e.printStackTrace();
             }
         }
-        continueButton.setEnabled(false);
+        loadSavedSessionButton.setEnabled(false);
     }
 
     private void updateUI(List<JButton> buttons, JLabel wordToTranslate, List<Question> questions, int currentQuestionIndex) {
@@ -692,9 +692,8 @@ class MainMenu implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        // todo tu musi sie dziac magia i wyskakuje okienko a gra sie konczy :3 ;p
         resultPopup(questions, isTest);
-        gameFrame.dispose();
+        sessionWindowFrame.dispose();
         o.deleteObserver(this);
 
     }

@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * The type Foreign polish state.
  */
-public class ForeignPolishState extends LanguageState {
+public class ForeignPolishState implements LanguageState {
 
     @Override
     public String getLanguage() {

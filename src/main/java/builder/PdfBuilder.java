@@ -67,18 +67,23 @@ public class PdfBuilder implements RaportBuilder {
      */
     public String buildPdf() throws IOException, DocumentException {
         int[] sizes;
+        int points;
         if (userAnswersList == null) {
             sizes = new int[]{wordsToTranslateList.size(), answersList.size(), correctAnswers.size()};
+            points = -1;
         } else {
             sizes = new int[]{wordsToTranslateList.size(), answersList.size(), correctAnswers.size(), userAnswersList.size()};
+            points = 0;
+
         }
         IntSummaryStatistics stat = Arrays.stream(sizes).summaryStatistics();
         int maxSize = stat.getMax();
         Document document = new Document();
         Paragraph preface = new Paragraph();
         File resultPath = new File("results/results.pdf");
-        if (!resultPath.getParentFile().exists())
+        if (!resultPath.getParentFile().exists()) {
             resultPath.getParentFile().mkdirs();
+        }
         PdfWriter.getInstance(document, new FileOutputStream(resultPath));
 
         document.open();
@@ -105,6 +110,12 @@ public class PdfBuilder implements RaportBuilder {
                         pdfPCell.setPhrase(new Phrase(userAnswersList.get(i), userAnswerFont));
                         table.addCell(pdfPCell);
                     }
+                    if (answersList.get(i).get(0).getWord().equals(correctAnswers.get(i).getWord()) &&
+                            answersList.get(i).get(0).getWord().equals(userAnswersList.get(i))
+                    ) {
+                        points++;
+
+                    }
                 } else {
                     cell.setPhrase(new Phrase(answersList.get(i).get(0).getWord(), userAnswerFont));
                 }
@@ -121,17 +132,25 @@ public class PdfBuilder implements RaportBuilder {
                         } else {
                             cell.setPhrase(new Phrase(answersList.get(i).get(j).getWord(), answerF));
                         }
+                        if (answersList.get(i).get(j).getWord().equals(correctAnswers.get(i).getWord()) &&
+                                answersList.get(i).get(j).getWord().equals(userAnswersList.get(i))
+                        ) {
+                            points++;
+
+                        }
                     } else {
                         cell.setPhrase(new Phrase(answersList.get(i).get(j).getWord(), answerF));
                     }
                     table.addCell(cell);
-
                 }
             }
             preface.add(paragraph);
             preface.add(new Paragraph(" "));
             preface.add(table);
-
+        }
+        if (points > -1) {
+            preface.add(new Paragraph(" "));
+            preface.add("You had " + String.valueOf(points) + "/" + String.valueOf(maxSize) + " points");
         }
         document.add(preface);
         document.close();

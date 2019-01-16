@@ -61,10 +61,12 @@ public class TxtBuilder implements RaportBuilder {
      */
     public String buildTxt() throws IOException {
         BufferedWriter bufferedWriter;
+        int points = 0;
         FileWriter fileWriter;
         int[] sizes;
         if (userAnswersList == null) {
             sizes = new int[]{wordsToTranslateList.size(), answersList.size(), correctAnswers.size()};
+            points = -1;
         } else {
             sizes = new int[]{wordsToTranslateList.size(), answersList.size(), correctAnswers.size(), userAnswersList.size()};
         }
@@ -79,11 +81,21 @@ public class TxtBuilder implements RaportBuilder {
             bufferedWriter.write("\nWord to translate: " + wordsToTranslateList.get(i).getWord() + "\n\n");
             for (int j = 0; j < answersList.get(i).size(); j++) {
                 bufferedWriter.write(String.valueOf(j + 1) + ". " + answersList.get(i).get(j).getWord() + "\n\n");
+                if (userAnswersList != null) {
+                    if (answersList.get(i).get(j).getWord().equals(correctAnswers.get(i).getWord()) &&
+                            answersList.get(i).get(j).getWord().equals(userAnswersList.get(i))
+                    ) {
+                        points++;
+                    }
+                }
             }
             bufferedWriter.write("Correct answer: " + correctAnswers.get(i).getWord() + "\n");
             if (userAnswersList != null) {
                 bufferedWriter.write("Users answer: " + userAnswersList.get(i) + "\n");
             }
+        }
+        if (points > -1) {
+            bufferedWriter.write("\nYou've got " + String.valueOf(points) + "/" + String.valueOf(maxSize) + " points");
         }
         bufferedWriter.close();
         fileWriter.close();

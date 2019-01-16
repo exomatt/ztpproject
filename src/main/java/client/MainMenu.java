@@ -18,8 +18,8 @@ import state.LanguageState;
 import state.PolishForeignState;
 import strategy.*;
 
-import javax.swing.Timer;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,8 +30,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 /**
  * The type Main menu.
@@ -559,10 +559,10 @@ class MainMenu implements Observer {
         }
     }
 
-    private void setupTextField(JFrame frame, JPanel bottomPanel, JTextField userAnswer, JLabel wordToTranslate, int maxWords, List<Question> questions, int[] currentQuestionIndex, boolean game) {
+    private void setupTextField(JFrame frame, JPanel bottomPanel, JTextField userAnswer, JLabel wordToTranslate, int maxWords, List<Question> questions, int[] currentQuestionIndex, boolean isTest) {
         bottomPanel.add(userAnswer);
         userAnswer.addActionListener(e -> {
-            if (game) {
+            if (isTest) {
                 questions.get(currentQuestionIndex[0]).setPickByUser(userAnswer.getText());
                 currentQuestionIndex[0]++;
                 userAnswer.setText("");
@@ -576,7 +576,7 @@ class MainMenu implements Observer {
                 }
             }
             if (currentQuestionIndex[0] == maxWords) {
-                resultPopup(questions, game);
+                resultPopup(questions, isTest);
                 frame.dispose();
             } else {
                 wordToTranslate.setText("Word to translate:  " + questions.get(currentQuestionIndex[0]).getWordToTranslate().getWord());
@@ -584,12 +584,12 @@ class MainMenu implements Observer {
         });
     }
 
-    private void setupButtons(JFrame frame, JPanel bottomPanel, List<JButton> buttons, JLabel wordToTranslate, int maxWords, List<Question> questions, int[] currentQuestionIndex, boolean game) {
+    private void setupButtons(JFrame frame, JPanel bottomPanel, List<JButton> buttons, JLabel wordToTranslate, int maxWords, List<Question> questions, int[] currentQuestionIndex, boolean isTest) {
         for (JButton button :
                 buttons) {
             bottomPanel.add(button);
             button.addActionListener(e -> {
-                if (game) {
+                if (isTest) {
                     questions.get(currentQuestionIndex[0]).setPickByUser(button.getText());
                     currentQuestionIndex[0]++;
                 } else {
@@ -601,7 +601,7 @@ class MainMenu implements Observer {
                     }
                 }
                 if (currentQuestionIndex[0] == maxWords) {
-                    resultPopup(questions, game);
+                    resultPopup(questions, isTest);
                     frame.dispose();
                 } else {
                     updateUI(buttons, wordToTranslate, questions, currentQuestionIndex[0]);

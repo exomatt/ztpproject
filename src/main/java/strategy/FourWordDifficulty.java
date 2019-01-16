@@ -15,9 +15,10 @@ public class FourWordDifficulty implements Difficulty {
     @Override
     public List<Word> getAnswerWords(Word word, DatabaseEditor editor, LanguageState state) {
         List<Word> result = new ArrayList<>();
-        result.add(word.getTranslation());
+        Word correct = word.getTranslation();
+        result.add(correct);
         List<Word> wordList = state.getWordList(editor);
-        wordList.remove(word.getTranslation());
+        wordList.removeIf(p -> p.getWord().equals(correct.getWord()));
         result.addAll(WordRandomizer.getRandomWords(wordList, 3));
         Collections.shuffle(result);
         return result;

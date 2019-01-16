@@ -48,11 +48,14 @@ class MainMenu implements Observer {
     private static final int POLENG = 2;
     private static final int ENGPOL = 3;
     private final JFrame mainframe;
-    JButton continueButton = new JButton("Continue");
+    private JButton continueButton = new JButton("Continue");
     private JList list;
     private List<Word> words;
     private JComboBox<String> languageComboBox;
     private GameMemento memento;
+    private List<Question> questions;
+    private boolean isTest;
+    private JFrame gameFrame;
 
     /**
      * Instantiates a new Main menu.
@@ -138,6 +141,7 @@ class MainMenu implements Observer {
                         String iterType = iteratorComboBox.getSelectedItem().toString();
                         int questionsAmount = questionsAmountSlider.getValue();
                         if (learnRadioButton.isSelected()) {
+                            isTest = false;
                             if (polEngRadioButton.isSelected()) {
                                 if (fileDatabaseRadioButton.isSelected()) {
                                     createGameWindowFromStart(LEARN, POLENG, FILEDB, gameDifficulty, iterType, questionsAmount);   ///Learn, Polish-English, File Database
@@ -152,6 +156,7 @@ class MainMenu implements Observer {
                                 }
                             }
                         } else {
+                            isTest = true;
                             if (polEngRadioButton.isSelected()) {
                                 if (fileDatabaseRadioButton.isSelected()) {
                                     createGameWindowFromStart(TEST, POLENG, FILEDB, gameDifficulty, iterType, questionsAmount);   //Test, Polish-English, File Database
@@ -411,7 +416,7 @@ class MainMenu implements Observer {
         }
 
         Iterator<Word> iterator = game.getIterator();
-        List<Question> questions = new ArrayList<>();
+        questions = new ArrayList<>();
         switch (diff) {
             case "2 words":
                 game.setGameDifficulty(new TwoWordDifficulty());
@@ -455,9 +460,9 @@ class MainMenu implements Observer {
 
     /////////// CREATE GAME WINDOW
     private void createGameWindow(List<Question> questions, String diff, int maxWords, boolean game, int index) {
-        JFrame frame = new JFrame("Game");
+        gameFrame = new JFrame("Game");
         int[] currentQuestionIndex = {index};
-        frame.addWindowListener(new WindowAdapter() {
+        gameFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 super.windowClosing(e);
@@ -474,7 +479,7 @@ class MainMenu implements Observer {
                     addMemento(memento);
                     System.exit(0);
                 } else {
-                    frame.dispose();
+                    gameFrame.dispose();
                 }
             }
         });
@@ -496,54 +501,54 @@ class MainMenu implements Observer {
         if (game) {
             ObservableUser listener = new ObservableUser(timeLabel, maxWords);
             listener.addObserver(this);
-            Timer timer = new Timer(100, listener);
+            Timer timer = new Timer(1000, listener);
             timer.setInitialDelay(0);
             timer.start();
         }
         switch (diff) {
             case "2 words":
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 2);
-                setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
+                setupButtons(gameFrame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
             case "3 words":
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 3);
-                setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
+                setupButtons(gameFrame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
             case "4 words"
                     :
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 4);
-                setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
+                setupButtons(gameFrame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
             case "5 words":
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 5);
-                setupButtons(frame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
+                setupButtons(gameFrame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
             case "Write words":
-                setupTextField(frame, bottomPanel, userAnswer, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
+                setupTextField(gameFrame, bottomPanel, userAnswer, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
         }
 
 
-        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        frame.setResizable(false);
-        frame.setLocation(10, 10);
-        frame.setLayout(new BorderLayout());
+        gameFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        gameFrame.setResizable(false);
+        gameFrame.setLocation(10, 10);
+        gameFrame.setLayout(new BorderLayout());
         gamePanel.setLayout(new FlowLayout());
         gamePanel.add(wordToTranslate);
         wordToTranslate.setText("Word to translate:  " + questions.get(currentQuestionIndex[0]).getWordToTranslate().getWord());
 
         bottomPanel.setLayout(new GridLayout());
 
-        frame.add(gamePanel, BorderLayout.NORTH);
+        gameFrame.add(gamePanel, BorderLayout.NORTH);
         spacingPanel.setPreferredSize(new Dimension(300, 100));
         spacingPanel.setLayout(new BorderLayout());
         spacingPanel.add(timeLabel, BorderLayout.CENTER);
-        frame.add(new JPanel(), BorderLayout.EAST);
-        frame.add(new JPanel(), BorderLayout.WEST);
-        frame.add(spacingPanel, BorderLayout.CENTER);
-        frame.add(bottomPanel, BorderLayout.SOUTH);
-        frame.pack();
-        frame.setVisible(true);
+        gameFrame.add(new JPanel(), BorderLayout.EAST);
+        gameFrame.add(new JPanel(), BorderLayout.WEST);
+        gameFrame.add(spacingPanel, BorderLayout.CENTER);
+        gameFrame.add(bottomPanel, BorderLayout.SOUTH);
+        gameFrame.pack();
+        gameFrame.setVisible(true);
 
     }
 
@@ -705,6 +710,8 @@ class MainMenu implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         // todo tu musi sie dziac magia i wyskakuje okienko a gra sie konczy :3 ;p
+        resultPopup(questions, isTest);
+        gameFrame.dispose();
         o.deleteObserver(this);
         System.out.println("dostałem wiadomosc ");
 

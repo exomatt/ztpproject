@@ -23,7 +23,6 @@ public class ObservableUser extends Observable implements ActionListener {
     private List<Observer> observers = new ArrayList<>();
     private JLabel timeLabel;
     private int elapsedSeconds;
-    private String seconds = Integer.toString(elapsedSeconds);
 
 
     /**

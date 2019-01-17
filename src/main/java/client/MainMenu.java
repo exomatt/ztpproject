@@ -272,8 +272,8 @@ class MainMenu implements Observer {
         removeWordButton.setEnabled(false);
         removeWordButton.addActionListener(e -> {
             Word current = getCurrentWord(words, databaseWordsList);
-            databaseEditor.deleteWord(current);
             words.remove(current);
+            databaseEditor.deleteWord(current);
             databaseWordsList.setModel(new CustomListModel(words));
             databaseWordsList.clearSelection();
             wordField.setText("");
@@ -511,8 +511,7 @@ class MainMenu implements Observer {
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 3);
                 setupButtons(sessionWindowFrame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;
-            case "4 words"
-                    :
+            case "4 words":
                 addButtonsToList(buttons, questions.get(currentQuestionIndex[0]), 4);
                 setupButtons(sessionWindowFrame, bottomPanel, buttons, wordToTranslate, maxWords, questions, currentQuestionIndex, game);
                 break;

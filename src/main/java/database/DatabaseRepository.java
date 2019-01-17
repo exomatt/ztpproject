@@ -72,11 +72,17 @@ public class DatabaseRepository implements DatabaseEditor {
     }
 
     public void changeWorldTranslation(Word word) {
-        EntityManager entityManager = ConnectionSingleton.getEntityManagerFactory().createEntityManager();
-        entityManager.getTransaction().begin();
-        entityManager.merge(word);
-        entityManager.getTransaction().commit();
-        entityManager.close();
+        Word newTranslation = word.getTranslation();
+        Word oldTranslation = getWord(word.getWord()).getTranslation();
+        word.setTranslation(oldTranslation);
+        deleteWord(word);
+        word.setTranslation(newTranslation);
+        addWord(word);
+//        EntityManager entityManager = ConnectionSingleton.getEntityManagerFactory().createEntityManager();
+//        entityManager.getTransaction().begin();
+//        entityManager.merge(word);
+//        entityManager.getTransaction().commit();
+//        entityManager.close();
     }
 
     private boolean checkIfInDB(Word word) {

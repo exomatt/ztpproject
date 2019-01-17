@@ -1,6 +1,6 @@
 package state;
 
-import database.DatabaseEditor;
+import database.DataBaseEditorTarget;
 import model.Word;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public class ForeignPolishState implements LanguageState {
     }
 
     @Override
-    public List<Word> getWordList(DatabaseEditor databaseEditor) {
-        return databaseEditor.findByLanguage("pl");
+    public List<Word> getWordList(DataBaseEditorTarget dataBaseEditorTarget) {
+        return dataBaseEditorTarget.findByLanguage("pl");
     }
 }

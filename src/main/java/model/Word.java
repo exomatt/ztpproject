@@ -16,9 +16,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class Word implements Serializable {
     @Id
-    @Column(name = "WORD", nullable = false)
+    @Column(name = "WORD_ID", nullable = false)
     private String word;
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, targetEntity = Word.class)
     @JoinColumn(name = "WORDTranslation")
     private Word translation;
     private String language;

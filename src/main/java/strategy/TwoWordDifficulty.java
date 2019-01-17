@@ -1,6 +1,6 @@
 package strategy;
 
-import database.DatabaseEditor;
+import database.DataBaseEditorTarget;
 import model.Word;
 import state.LanguageState;
 
@@ -14,7 +14,7 @@ import java.util.List;
 public class TwoWordDifficulty implements Difficulty {
 
     @Override
-    public List<Word> getAnswerWords(Word word, DatabaseEditor editor, LanguageState state) {
+    public List<Word> getAnswerWords(Word word, DataBaseEditorTarget editor, LanguageState state) {
         List<Word> result = new ArrayList<>();
         Word correct = word.getTranslation();
         result.add(correct);

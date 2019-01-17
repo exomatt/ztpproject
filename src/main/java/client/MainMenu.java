@@ -4,7 +4,8 @@ import builder.PdfBuilder;
 import builder.RaportBuilder;
 import builder.TxtBuilder;
 import com.itextpdf.text.DocumentException;
-import database.DatabaseEditor;
+import database.DataBaseEditorTarget;
+import database.DatabaseEditorAdapter;
 import database.DatabaseRepository;
 import database.FileDatabase;
 import game.LearningGame;
@@ -18,8 +19,8 @@ import state.LanguageState;
 import state.PolishForeignState;
 import strategy.*;
 
-import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -27,8 +28,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * The type Main menu.
@@ -40,7 +41,7 @@ class MainMenu implements Observer {
     private static final int MAX_QUESTIONS_AMOUNT = 25;
     private static final int FILEDATABASE = 4;
     private static final int MYSQLDATABASE = 5;
-    private DatabaseEditor databaseEditor;
+    private DataBaseEditorTarget databaseEditor;
     private static final int LEARN = 0;
     private static final int TEST = 1;
     private static final int POLISH_ENGLISH = 2;
@@ -192,11 +193,10 @@ class MainMenu implements Observer {
 
         JButton editWordButton = new JButton("Edit");
         JButton removeWordButton = new JButton("Remove");
-        databaseEditor = new DatabaseEditor();
         if (source == MYSQLDATABASE) {
-            databaseEditor.setDatabase(new DatabaseRepository());
+            databaseEditor = new DatabaseEditorAdapter(new DatabaseRepository());
         } else {
-            databaseEditor.setDatabase(new FileDatabase());
+            databaseEditor = new DatabaseEditorAdapter(new FileDatabase());
         }
 
         words = databaseEditor.findByLanguage("pl");
@@ -379,7 +379,6 @@ class MainMenu implements Observer {
     }
 
     private void createGameWindowFromStart(int gameType, int langState, int repo, String diff, String iterType, int value) {
-        databaseEditor = new DatabaseEditor();
         LearningGame game;
         game = new LearningGame();
         if (gameType == LEARN) {
@@ -389,9 +388,9 @@ class MainMenu implements Observer {
         }
         LanguageState languageState;
         if (repo == FILEDATABASE) {
-            databaseEditor.setDatabase(new FileDatabase());
+            databaseEditor = new DatabaseEditorAdapter(new FileDatabase());
         } else {
-            databaseEditor.setDatabase(new DatabaseRepository());
+            databaseEditor = new DatabaseEditorAdapter(new DatabaseRepository());
         }
 
         if (langState == POLISH_ENGLISH) {

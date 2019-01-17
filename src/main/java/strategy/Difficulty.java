@@ -1,6 +1,6 @@
 package strategy;
 
-import database.DatabaseEditor;
+import database.DataBaseEditorTarget;
 import model.Word;
 import state.LanguageState;
 
@@ -18,5 +18,5 @@ public interface Difficulty {
      * @param state  the state
      * @return the answer words
      */
-    List<Word> getAnswerWords(Word word, DatabaseEditor editor, LanguageState state);
+    List<Word> getAnswerWords(Word word, DataBaseEditorTarget editor, LanguageState state);
 }

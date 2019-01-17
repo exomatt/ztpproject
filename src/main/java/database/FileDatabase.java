@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * The type File database.
  */
 @Log
-public class FileDatabase implements DatabaseEditorAdapter {
+public class FileDatabase implements DatabaseEditor {
     private final String filePath = "database.csv";
 
     public void addWord(Word word) {

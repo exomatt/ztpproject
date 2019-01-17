@@ -1,6 +1,6 @@
 package state;
 
-import database.DatabaseEditor;
+import database.DataBaseEditorTarget;
 import model.Word;
 
 import java.util.List;
@@ -19,8 +19,8 @@ public interface LanguageState {
     /**
      * Gets word list.
      *
-     * @param databaseEditor the database editor
+     * @param dataBaseEditorTarget the database editor
      * @return the word list
      */
-    List<Word> getWordList(DatabaseEditor databaseEditor);
+    List<Word> getWordList(DataBaseEditorTarget dataBaseEditorTarget);
 }

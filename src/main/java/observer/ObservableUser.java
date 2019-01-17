@@ -39,6 +39,7 @@ public class ObservableUser extends Observable implements ActionListener {
     }
 
     @Override
+
     public void addObserver(Observer observer) {
         observers.add(observer);
     }

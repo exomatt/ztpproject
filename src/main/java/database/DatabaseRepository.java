@@ -13,7 +13,7 @@ import java.util.List;
  * The type Database repository.
  */
 @Log
-public class DatabaseRepository implements DatabaseEditorAdapter {
+public class DatabaseRepository implements DatabaseEditor {
     public void addWord(Word word) {
         EntityManager entityManager = ConnectionSingleton.getEntityManagerFactory().createEntityManager();
         log.info("In addWord function in DatabaseRepository Word: " + word.toString());
@@ -30,7 +30,13 @@ public class DatabaseRepository implements DatabaseEditorAdapter {
     public void deleteWord(Word word) {
         EntityManager entityManager = ConnectionSingleton.getEntityManagerFactory().createEntityManager();
         entityManager.getTransaction().begin();
-        entityManager.remove(word);
+        Word translation = word.getTranslation();
+        translation.setTranslation(null);
+        word.setTranslation(null);
+        Word merge = entityManager.merge(word);
+        Word mergeTrans = entityManager.merge(translation);
+        entityManager.remove(merge);
+        entityManager.remove(mergeTrans);
         entityManager.getTransaction().commit();
         entityManager.close();
     }

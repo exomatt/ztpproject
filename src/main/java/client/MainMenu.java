@@ -572,7 +572,8 @@ class MainMenu implements Observer {
                 }
             }
             if (currentQuestionIndex[0] == maxWords) {
-                listener.deleteObserver(this);
+                if (isTest)
+                    listener.deleteObserver(this);
                 resultPopup(questions, isTest);
                 frame.dispose();
             } else {
@@ -598,7 +599,8 @@ class MainMenu implements Observer {
                     }
                 }
                 if (currentQuestionIndex[0] == maxWords) {
-                    listener.deleteObserver(this);
+                    if (isTest)
+                        listener.deleteObserver(this);
                     resultPopup(questions, isTest);
                     frame.dispose();
                 } else {

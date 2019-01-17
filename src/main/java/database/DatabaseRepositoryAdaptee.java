@@ -78,11 +78,6 @@ public class DatabaseRepositoryAdaptee implements DatabaseEditorAdaptee {
         deleteWord(word);
         word.setTranslation(newTranslation);
         addWord(word);
-//        EntityManager entityManager = ConnectionSingleton.getEntityManagerFactory().createEntityManager();
-//        entityManager.getTransaction().begin();
-//        entityManager.merge(word);
-//        entityManager.getTransaction().commit();
-//        entityManager.close();
     }
 
     private boolean checkIfInDB(Word word) {

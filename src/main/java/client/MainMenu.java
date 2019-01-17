@@ -6,8 +6,8 @@ import builder.TxtBuilder;
 import com.itextpdf.text.DocumentException;
 import database.DataBaseEditorTarget;
 import database.DatabaseEditorAdapter;
-import database.DatabaseRepository;
-import database.FileDatabase;
+import database.DatabaseRepositoryAdaptee;
+import database.FileDatabaseAdaptee;
 import game.LearningGame;
 import lombok.extern.java.Log;
 import memento.GameMemento;
@@ -194,9 +194,9 @@ class MainMenu implements Observer {
         JButton editWordButton = new JButton("Edit");
         JButton removeWordButton = new JButton("Remove");
         if (source == MYSQLDATABASE) {
-            databaseEditor = new DatabaseEditorAdapter(new DatabaseRepository());
+            databaseEditor = new DatabaseEditorAdapter(new DatabaseRepositoryAdaptee());
         } else {
-            databaseEditor = new DatabaseEditorAdapter(new FileDatabase());
+            databaseEditor = new DatabaseEditorAdapter(new FileDatabaseAdaptee());
         }
 
         words = databaseEditor.findByLanguage("pl");
@@ -388,9 +388,9 @@ class MainMenu implements Observer {
         }
         LanguageState languageState;
         if (repo == FILEDATABASE) {
-            databaseEditor = new DatabaseEditorAdapter(new FileDatabase());
+            databaseEditor = new DatabaseEditorAdapter(new FileDatabaseAdaptee());
         } else {
-            databaseEditor = new DatabaseEditorAdapter(new DatabaseRepository());
+            databaseEditor = new DatabaseEditorAdapter(new DatabaseRepositoryAdaptee());
         }
 
         if (langState == POLISH_ENGLISH) {

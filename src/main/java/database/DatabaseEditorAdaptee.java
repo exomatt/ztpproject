@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * The interface Database editor adapter.
  */
-public interface DatabaseEditor {
+public interface DatabaseEditorAdaptee {
     /**
      * Add word.
      *

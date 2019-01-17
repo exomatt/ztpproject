@@ -14,9 +14,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class DatabaseEditorAdapter implements DataBaseEditorTarget {
-    private DatabaseEditor database;
+    private DatabaseEditorAdaptee database;
 
-    public DatabaseEditorAdapter(DatabaseEditor database) {
+    public DatabaseEditorAdapter(DatabaseEditorAdaptee database) {
         this.database = database;
     }
 

@@ -2,6 +2,7 @@ package database;
 
 import lombok.extern.java.Log;
 import org.hibernate.service.spi.ServiceException;
+import org.hibernate.tool.schema.spi.CommandAcceptanceException;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -22,6 +23,8 @@ public class ConnectionSingleton {
         EntityManagerFactory eMF = null;
         try {
             eMF = Persistence.createEntityManagerFactory("ztpPU");
+        } catch (CommandAcceptanceException exception) {
+            log.severe("Problem with dll" + exception.getMessage());
         } catch (ServiceException ex) {
             log.severe("Problem with connection to DB: " + ex.getMessage());
             JOptionPane.showMessageDialog(new JFrame(), "Problem with database", "Dialog",

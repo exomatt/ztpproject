@@ -18,7 +18,7 @@
             <property name="hibernate.connection.CharSet" value="utf8"/>
             <property name="hibernate.connection.CharacterEncoding" value="utf8"/>
             <property name="hibernate.connection.useUnicode" value="true"/>
-            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.show_sql" value="false"/>
             <property name="hibernate.format_sql" value="true"/>
             <property name="hbm2ddl.auto" value="update"/>
             <property name="hibernate.hbm2ddl.auto" value="create"/>

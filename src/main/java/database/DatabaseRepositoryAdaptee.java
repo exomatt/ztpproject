@@ -13,10 +13,10 @@ import java.util.List;
  * The type Database repository.
  */
 @Log
-public class DatabaseRepository implements DatabaseEditor {
+public class DatabaseRepositoryAdaptee implements DatabaseEditorAdaptee {
     public void addWord(Word word) {
         EntityManager entityManager = ConnectionSingleton.getEntityManagerFactory().createEntityManager();
-        log.info("In addWord function in DatabaseRepository Word: " + word.toString());
+        log.info("In addWord function in DatabaseRepositoryAdaptee Word: " + word.toString());
         if (checkIfInDB(word)) {
             log.info("Object alredy exists in DB: " + word.toString());
             return;
@@ -74,6 +74,7 @@ public class DatabaseRepository implements DatabaseEditor {
     public void changeWorldTranslation(Word word) {
         EntityManager entityManager = ConnectionSingleton.getEntityManagerFactory().createEntityManager();
         entityManager.getTransaction().begin();
+        entityManager.merge(word.getTranslation());
         entityManager.merge(word);
         entityManager.getTransaction().commit();
         entityManager.close();

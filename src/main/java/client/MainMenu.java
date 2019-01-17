@@ -55,6 +55,7 @@ class MainMenu implements Observer {
     private List<Question> questions;
     private boolean isTest;
     private JFrame sessionWindowFrame;
+    private ObservableUser listener;
 
     /**
      * Instantiates a new Main menu.
@@ -496,7 +497,7 @@ class MainMenu implements Observer {
         JLabel timeLabel = new JLabel();
         JPanel spacingPanel = new JPanel();
         if (game) {
-            ObservableUser listener = new ObservableUser(timeLabel, maxWords);
+            listener = new ObservableUser(timeLabel, maxWords);
             listener.addObserver(this);
             Timer timer = new Timer(1000, listener);
             timer.setInitialDelay(0);
@@ -571,6 +572,7 @@ class MainMenu implements Observer {
                 }
             }
             if (currentQuestionIndex[0] == maxWords) {
+                listener.deleteObserver(this);
                 resultPopup(questions, isTest);
                 frame.dispose();
             } else {
@@ -596,6 +598,7 @@ class MainMenu implements Observer {
                     }
                 }
                 if (currentQuestionIndex[0] == maxWords) {
+                    listener.deleteObserver(this);
                     resultPopup(questions, isTest);
                     frame.dispose();
                 } else {

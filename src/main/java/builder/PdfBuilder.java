@@ -86,7 +86,7 @@ public class PdfBuilder implements RaportBuilder {
         PdfWriter.getInstance(document, new FileOutputStream(resultPath));
 
         document.open();
-        BaseFont baseFont = BaseFont.createFont("c:/windows/fonts/arial.ttf", BaseFont.CP1250, BaseFont.EMBEDDED);
+        BaseFont baseFont = BaseFont.createFont("fonts/AbhayaLibre-Regular.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
         Font font = new Font(baseFont, 16, Font.NORMAL);
         Font userAnswerFont = new Font(baseFont, 12, Font.BOLD);
         Font answerF = new Font(baseFont, 12, Font.NORMAL);
@@ -149,7 +149,7 @@ public class PdfBuilder implements RaportBuilder {
         }
         if (points > -1) {
             preface.add(new Paragraph(" "));
-            preface.add(String.format("You had %s/%s points", String.valueOf(points), String.valueOf(maxSize)));
+            preface.add(new Phrase(String.format("You had %s/%s points", String.valueOf(points), String.valueOf(maxSize)), font));
         }
         document.add(preface);
         document.close();
